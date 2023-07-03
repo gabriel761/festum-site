@@ -1,7 +1,7 @@
 import axios from "axios";
 
  const api = axios.create({
-    baseURL:'https://festum.herokuapp.com',
+    baseURL:'https://festum-heroku-production.up.railway.app',
     timeout: 3000,
 //   headers:{'X-Custom-Header': 'foobar'}
 })
