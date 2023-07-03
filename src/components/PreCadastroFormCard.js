@@ -95,7 +95,11 @@ const PreCadastroFormCard = ({ ipagId }) => {
 
         if (ipagId && ((cpfIsValid.current || cnpjIsValidRef.current) && !(cpfIsValid.current && cnpjIsValidRef.current))) {
             setMessage('')
-            values = { ...values, ipagId }
+            if(cpfIsValid.current){
+                values = { ...values, cpf_cnpj: cpf, ipagId }
+            }else{
+                values = { ...values, cpf_cnpj: cnpj, ipagId }
+            }
             let redirectLink = window.location.host + "/email-confirmado?values=" + JSON.stringify(values)
             console.log(redirectLink)
             const result = await efetuarPreCadastroSite(values, redirectLink)

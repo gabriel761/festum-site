@@ -16,7 +16,7 @@ export default function EmailConfirmado() {
     console.log(searchParams)
     const values = JSON.parse(searchParams.get("values"))
     console.log("values from url: ", values)
-    const criarClienteIpag = { name: values.nome, email: values.email, cpf_cnpj: '16035561764', phone: "21960183131" }
+    const criarClienteIpag = { name: values.nome, email: values.email, cpf_cnpj: values.cpf_cnpj,  phone: values.tel }
 
     const requestIpag = () => {
         console.log("objeto ipag antes de enviar: ", criarClienteIpag)

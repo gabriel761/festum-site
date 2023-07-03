@@ -11,6 +11,7 @@ let isLoading = false
 export const efetuarPreCadastroSite = async (values, redirectLink) => {
   console.log("values dentro do efetuar cadastro: ", values)
   console.log("credentials dentro do efetuar cadastro: ", values)
+  console.log("redirect link: ", redirectLink)
   try {
     let newValues = {...values, statusConta: "Cadastro incompleto site"}
     //newValues = await uploadImageToFirebase(newValues)
