@@ -100,7 +100,7 @@ const PreCadastroFormCard = ({ ipagId }) => {
             }else{
                 values = { ...values, cpf_cnpj: cnpj, ipagId }
             }
-            let redirectLink = "www." + 'festum-site.vercel.app' 
+            let redirectLink = "https://" + 'festum-site.vercel.app' 
             //+ "/email-confirmado?values=" + JSON.stringify(values)
             console.log(redirectLink)
             const result = await efetuarPreCadastroSite(values, redirectLink)
