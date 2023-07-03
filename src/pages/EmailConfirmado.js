@@ -16,6 +16,7 @@ export default function EmailConfirmado() {
     console.log(searchParams)
     let values = searchParams.get("values")
     values = decodeURIComponent(values)
+    values = JSON.parse(values)
     console.log("values from url: ", values)
     const criarClienteIpag = { name: values.nome, email: values.email, cpf_cnpj: values.cpf_cnpj,  phone: values.tel }
 
