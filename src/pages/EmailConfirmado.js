@@ -14,7 +14,8 @@ import { apiIpag } from '../api/apiIpag';
 export default function EmailConfirmado() {
     const [searchParams] = useSearchParams();
     console.log(searchParams)
-    const values = JSON.parse(searchParams.get("values"))
+    let values = searchParams.get("values")
+    values = decodeURIComponent(values)
     console.log("values from url: ", values)
     const criarClienteIpag = { name: values.nome, email: values.email, cpf_cnpj: values.cpf_cnpj,  phone: values.tel }
 
