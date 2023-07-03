@@ -1,0 +1,63 @@
+body {
+  margin: 0;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+loginBox {
+  max-width: 300px;
+}
+
+/* 
+.card {
+  border-width: 1px;
+  border-color: #bbbbbb;
+  height: 90px;
+  width: 100px;
+  background-color: #cbcbcb;
+  border-color: #d32292;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  margin: 0 5px;
+  border-radius: 10px;
+}
+.sectionTitle {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 15px
+}
+.row {
+  flex-direction: row;
+  align-items: center
+}
+.text {
+  font-size: 12px;
+  font-family: proxima-nova-regular;
+  color: #9a9a99
+}
+.botaoMais {
+  width: 35px;
+  height: 35px;
+  background-color: #d32292;
+  border-radius: 30px;
+  justify-content: center;
+  align-items: center;
+  margin-left: -10px
+}
+.mais {
+  color: white;
+  font-family: proxima-nova-black;
+  font-size: 25px
+};
+.image {
+  height: 100px;
+  width: 100px;
+  border-radius: 10px
+} */
