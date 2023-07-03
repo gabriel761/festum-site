@@ -3,7 +3,7 @@ import axios from "axios";
  const api = axios.create({
     baseURL:'https://festum.herokuapp.com',
     timeout: 3000,
-    headers:{'X-Custom-Header': 'foobar'}
+    headers:{"Access-Control-Allow-Origin": "*"}
 })
 
 // const api = axios.create({
