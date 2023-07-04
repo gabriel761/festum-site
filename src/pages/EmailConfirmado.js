@@ -18,19 +18,31 @@ export default function EmailConfirmado() {
     values = decodeURIComponent(values)
     values = JSON.parse(values)
     console.log("values from url: ", values)
-    const criarClienteIpag = { name: values.nome, email: values.email, cpf_cnpj: values.cpf_cnpj,  phone: values.tel }
+    const criarClienteIpag = { name: values.nome, email: values.email, cpf_cnpj: values.cpf_cnpj, phone: values.tel }
 
-    const requestIpag = () => {
+    const formatedDateToday = () => {
+        const date = new Date()
+        const dateStr = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()+1}`
+        console.log(dateStr)
+        return dateStr
+    }
+
+    const requestIpag = async () => {
         console.log("objeto ipag antes de enviar: ", criarClienteIpag)
-        apiIpag.request({
+        const resultClienteIpag = await apiIpag.request({
             method: 'POST',
             url: '/service/resources/customers',
             data: criarClienteIpag
-        }).then((response) => {
-            console.log("resposta ipag: ", response.data)
-        }).catch((e) => {
-            console.log("erro na requisição ipag: ",e)
         })
+        const clienteIpag = resultClienteIpag?.data
+        if(clienteIpag){
+            const criarAssinatura = {isActive: true, profile_id: values.email + values.ipagId, profile_id: values.ipagId, customerId: clienteIpag.id, starting_date: formatedDateToday(), callback_url: "https://festum-site.vercel.app/pagamento-confirmado" }
+            const resultPagamentoIpag = await apiIpag.request({
+                method:'POST',
+                url: '/service/resources/subscriptions',
+                data: criarAssinatura
+            })
+        }
     }
 
 

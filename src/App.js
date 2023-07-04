@@ -11,6 +11,8 @@ import PreCadastroForm from './pages/PreCadastroForm';
 import CriarLink from './pages/CriarLink';
 import ConfirmacaoPreCadastro from './pages/ConfirmacaoPreCadastro';
 import EmailConfirmado from './pages/EmailConfirmado';
+import PagamentoConfirmadoCard from './components/PagamentoConfirmadoCard';
+import PagamentoConfirmado from './pages/PagamentoConfirmado';
 
 function App() {
 
@@ -30,6 +32,7 @@ function App() {
               <Route path='/criar-link' element={<CriarLink />} />
               <Route path='/confirmacao-precadastro' element={<ConfirmacaoPreCadastro />} />
               <Route path='/email-confirmado' element={<EmailConfirmado />} />
+              <Route path='/pagamento-confirmado' element={<PagamentoConfirmado/>} />
             </Routes>
           </Router>
         </MDBContainer>
