@@ -37,6 +37,7 @@ export default function EmailConfirmado() {
         const clienteIpag = resultClienteIpag?.data
         if(clienteIpag){
             const criarAssinatura = {isActive: true, profile_id: values.email + values.ipagId, profile_id: values.ipagId, customerId: clienteIpag.id, starting_date: formatedDateToday(), callback_url: "https://festum-site.vercel.app/pagamento-confirmado" }
+            console.log("obj criar assinatura antes do request: ", criarAssinatura)
             const resultAssinaturaIpag= await apiIpag.request({
                 method:'POST',
                 url: '/service/resources/subscriptions',
