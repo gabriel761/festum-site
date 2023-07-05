@@ -47,7 +47,7 @@ useEffect(()=> {
     }
 
     const selectPlan = (item) => {
-        const selected = item.attributes.name
+        const selected = item.id
         if(isSelected != selected){
             setIsSelected(selected)
             setLinkIpag(item.id)
@@ -83,7 +83,7 @@ useEffect(()=> {
                         {planos.map((item, index) => {
                             return (
                                 <MDBCol key={index} md={2}>
-                                    <MDBCard className={isSelected == item.attributes.name?'border border-primary':''}>
+                                    <MDBCard className={isSelected == item.id?'border border-primary':''}>
                                         <MDBCardBody>
                                             <MDBCardTitle>{item.attributes.name}</MDBCardTitle>
                                             <MDBCardText>
