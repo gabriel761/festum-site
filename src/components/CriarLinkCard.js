@@ -8,7 +8,8 @@ import {
     MDBCheckbox,
     MDBBtn,
     MDBCardText,
-    MDBCardTitle
+    MDBCardTitle,
+    MDBSpinner
 } from 'mdb-react-ui-kit';
 import "../index.css"
 import { Formik } from 'formik';
@@ -23,6 +24,7 @@ const CriarLinkCard = () => {
     const [linkCompleto, setLinkCompleto] = useState('')
     const [planos, setPlanos] = useState([])
     const [isSelected, setIsSelected] = useState()
+    const [isLoading, setIsLoading] = useState(false)
 
 
 useEffect(()=> {
@@ -30,13 +32,18 @@ useEffect(()=> {
 },[])
 
     const consultarPlanos = async () => {
-        
+        try{
+            setIsLoading(true)
         const planos = await apiIpag.request({
             url: "/service/resources/plans",
             method: "GET"
         })
         console.log("planos: ", planos.data.data)
         setPlanos(planos.data.data)
+        setIsLoading(false)
+    }catch(e){
+        console.log("erro ao carregar planos: ", e)
+    }
     }
 
     const selectPlan = (item) => {
@@ -59,35 +66,50 @@ useEffect(()=> {
 
         }
     }
-    return (
-        <MDBCard  >
-            <MDBCardBody>
-                <MDBRow className='mb-5'>
-                    {planos.map((item, index) => {
-                        return (
-                            <MDBCol key={index} md={2}>
-                                <MDBCard className={isSelected == item.attributes.name?'border border-primary':''}>
-                                    <MDBCardBody>
-                                        <MDBCardTitle>{item.attributes.name}</MDBCardTitle>
-                                        <MDBCardText>
-                                            {item.attributes.description}
-                                        </MDBCardText>
-                                        <MDBBtn onClick={() => selectPlan(item)}>Selecionar</MDBBtn>
-                                    </MDBCardBody>
-                                </MDBCard>
-                            </MDBCol>
-                        )
-                    })}
 
-                </MDBRow>
-                <MDBCardText>{linkCompleto}</MDBCardText>
-                <MDBBtn onClick={handleClick} >
-                    Criar Link
-                </MDBBtn>
-                
-            </MDBCardBody>
-        </MDBCard>
-    );
+    if(isLoading){
+        return (
+            <div className='d-flex justify-content-center'>
+                <MDBSpinner role='status'>
+                    <span className='visually-hidden'>Loading...</span>
+                </MDBSpinner>
+            </div>
+        )
+    }else{
+        return (
+            <MDBCard  >
+                <MDBCardBody>
+                    <MDBRow className='mb-5'>
+                        {planos.map((item, index) => {
+                            return (
+                                <MDBCol key={index} md={2}>
+                                    <MDBCard className={isSelected == item.attributes.name?'border border-primary':''}>
+                                        <MDBCardBody>
+                                            <MDBCardTitle>{item.attributes.name}</MDBCardTitle>
+                                            <MDBCardText>
+                                                {item.attributes.description}
+                                            </MDBCardText>
+                                            <MDBCardText>
+                                               R$ {item.attributes.amount}
+                                            </MDBCardText>
+                                            <MDBBtn onClick={() => selectPlan(item)}>Selecionar</MDBBtn>
+                                        </MDBCardBody>
+                                    </MDBCard>
+                                </MDBCol>
+                            )
+                        })}
+    
+                    </MDBRow>
+                    <MDBCardText>{linkCompleto}</MDBCardText>
+                    <MDBBtn onClick={handleClick} >
+                        Criar Link
+                    </MDBBtn>
+                    
+                </MDBCardBody>
+            </MDBCard>
+        );
+    }
+    
 }
 
 export default CriarLinkCard;

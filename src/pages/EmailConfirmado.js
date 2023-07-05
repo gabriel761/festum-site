@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import "../index.css"
 import {
     MDBCol,
@@ -19,6 +19,7 @@ export default function EmailConfirmado() {
     values = JSON.parse(values)
     console.log("values from url: ", values)
     const criarClienteIpag = { name: values.nome, email: values.email, cpf_cnpj: values.cpf_cnpj, phone: values.tel }
+    const callUnce = useRef(false)
 
     const formatedDateToday = () => {
         const date = new Date()
@@ -27,7 +28,18 @@ export default function EmailConfirmado() {
         return dateStr
     }
 
+   
+           useEffect(()=> {
+            if(!callUnce.current){
+                requestIpag()
+            }
+            
+           },[])
+ 
+
     const requestIpag = async () => {
+        callUnce.current = true
+        try{
         console.log("objeto ipag antes de enviar: ", criarClienteIpag)
         const resultClienteIpag = await apiIpag.request({
             method: 'POST',
@@ -43,8 +55,13 @@ export default function EmailConfirmado() {
                 url: '/service/resources/subscriptions',
                 data: criarAssinatura
             })
-            console.log("restult assinatura ipag: ", resultAssinaturaIpag.data)
+            console.log("result assinatura ipag: ", resultAssinaturaIpag)
+            window.location.href = resultAssinaturaIpag.data.attributes.links.payment
         }
+    }catch(e){
+        console.log(e)
+        alert("algo deu errado: ", e.message)
+    }
     }
 
 
@@ -59,9 +76,7 @@ export default function EmailConfirmado() {
                     <EmailConfirmadoCard />
                 </MDBCol>
                 <MDBCol md={3}>
-                    <MDBBtn onClick={() => requestIpag()}>
-                        Testar ipag
-                    </MDBBtn>
+                   
                 </MDBCol>
             </MDBRow>
         </MDBContainer>

@@ -21,10 +21,17 @@ export default function Navbar() {
   const [showBasic, setShowBasic] = useState(false);
   const location = useLocation()
   console.log(location.pathname)
+  
+  const logoff = () => {
+    localStorage.removeItem('token-festum')
+    window.location.href="/";
+  }
   return (
     <MDBNavbar expand='lg' light bgColor='light'>
       <MDBContainer fluid>
-        <MDBNavbarBrand href='#'>Brand</MDBNavbarBrand>
+        <MDBNavbarBrand href='#'>
+          <img src='/logo.png' height="35" alt='' />
+        </MDBNavbarBrand>
 
         <MDBNavbarToggler
           aria-controls='navbarSupportedContent'
@@ -38,22 +45,13 @@ export default function Navbar() {
         <MDBCollapse navbar show={showBasic}>
           <MDBNavbarNav className='mr-auto mb-2 mb-lg-0'>
             <MDBNavbarItem>
-              <MDBNavbarLink active={location.pathname == "/"} aria-current='page' href='/'>Login</MDBNavbarLink>
-            </MDBNavbarItem>
-            <MDBNavbarItem>
-              <MDBNavbarLink active={location.pathname == "/table"} href='/table'>Table</MDBNavbarLink>
-            </MDBNavbarItem>
-            <MDBNavbarItem>
               <MDBNavbarLink active={location.pathname == "/lista-precadastro"} href='/lista-precadastro'>Lista pré-cadastro</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
-              <MDBNavbarLink active={location.pathname == "/form-precadastro"} href='/form-precadastro'>Formulário pré-cadastro</MDBNavbarLink>
-            </MDBNavbarItem>
-            <MDBNavbarItem>
-              <MDBNavbarLink active={location.pathname == "/cadastro-fornecedor"} href='/cadastro-fornecedor'>Cadastro de Fornecedor</MDBNavbarLink>
-            </MDBNavbarItem>
-            <MDBNavbarItem>
               <MDBNavbarLink active={location.pathname == "/criar-link"} href='/criar-link'>Criar Link</MDBNavbarLink>
+            </MDBNavbarItem>
+            <MDBNavbarItem>
+              <MDBNavbarLink active={location.pathname == "/criar-link"} onClick={() => logoff()}>Logoff</MDBNavbarLink>
             </MDBNavbarItem>
           </MDBNavbarNav>
         </MDBCollapse>

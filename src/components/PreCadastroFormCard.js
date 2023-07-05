@@ -14,7 +14,7 @@ import {
 import "../index.css"
 import { Formik } from 'formik';
 import { efetuarPreCadastroSite } from '../functions/efetuarPreCadastro';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { verificarCPF, validarCNPJ } from '../functions/verificacoesFornecedor';
 
 
@@ -24,6 +24,7 @@ const PreCadastroFormCard = ({ ipagId }) => {
     const [toggleCPF, setToggleCPF] = useState(false)
     const [cnpj, setCnpj] = useState('')
     const [cpf, setCpf] = useState('')
+    const [tel, setTel] = useState('')
     const [message, setMessage] = useState('')
     const [isLoading, setIsLoading] = useState(false)
 
@@ -31,14 +32,14 @@ const PreCadastroFormCard = ({ ipagId }) => {
     const cnpjIsValidRef = useRef(false)
     const cpfIsValid = useRef(false)
 
-
+   
     const yupObject = {
         nome: yup.string().required("Campo obrigatório"),
         sobrenome: yup.string().required("Campo obrigatório"),
         email: yup.string().required("Campo obrigatório").email("E-mail inválido"),
         senha: yup.string().required("Campo obrigatório").min(6, "Mínimo de 6 letras"),
         senhaConfirmar: yup.string().required("Campo obrigatório").oneOf([yup.ref("senha")], "As senhas não coincidem"),
-        tel: yup.string().required("Campo obrigatório").min(6, "Mínimo de 6 numeros")
+        
     }
 
     const validationSchema = yup.object(yupObject)
@@ -66,6 +67,13 @@ const PreCadastroFormCard = ({ ipagId }) => {
         }
 
     }
+    const phoneMask = (value) => {
+        if (!value) return ""
+        value = value.replace(/\D/g,'')
+        value = value.replace(/(\d{2})(\d)/,"($1) $2")
+        value = value.replace(/(\d)(\d{4})$/,"$1-$2")
+        setTel(value) 
+      }
     function maskCPF(cpf) {
         cpf = cpf.replace(/\D/g, "")
         cpf = cpf.replace(/(\d{3})(\d)/, "$1.$2")
@@ -93,28 +101,37 @@ const PreCadastroFormCard = ({ ipagId }) => {
     const handleSubmit = async (values) => {
         setIsLoading(true)
 
-        if (ipagId && ((cpfIsValid.current || cnpjIsValidRef.current) && !(cpfIsValid.current && cnpjIsValidRef.current))) {
+        if (ipagId && ((cpfIsValid.current || cnpjIsValidRef.current) && !(cpfIsValid.current && cnpjIsValidRef.current) && tel.length >= 10)) {
             setMessage('')
-            if(cpfIsValid.current){
+            if (cpfIsValid.current) {
                 values = { ...values, cpf_cnpj: cpf, ipagId }
-            }else{
+            } else {
                 values = { ...values, cpf_cnpj: cnpj, ipagId }
             }
-            let redirectLink = "https://" + 'festum-site.vercel.app'+"/email-confirmado?values=" + JSON.stringify(values) 
+            values = {...values, tel}
+            let redirectLink = "https://" + 'festum-site.vercel.app' + "/email-confirmado?values=" + JSON.stringify(values)
             redirectLink = encodeURI(redirectLink)
-            //+ "
-            //https://festum-site.vercel.app/email-confirmado?values={%22nome%22:%22gabriel%22,%22sobrenome%22:%22palacios%22,%22email%22:%22gabriel.broder2@gmail.com%22,%22senha%22:%22senha1%22,%22senhaConfirmar%22:%22senha1%22,%22tel%22:%2221960183131%22,%22cpf_cnpj%22:%22160.355.617-64%22,%22ipagId%22:%222562%22}
             console.log(redirectLink)
-            const result = await efetuarPreCadastroSite(values, redirectLink)
-            console.log('Result: ', result);
-            setIsLoading(false)
+            try {   
+                const result = await efetuarPreCadastroSite(values, redirectLink)
+                console.log('Result: ', result);
+                
+                window.location.href= window.location.origin + "/confirmacao-precadastro";
+                setIsLoading(false)
+            } catch (e) {
+             setMessage(e.message)   
+            }
+
         } else if (!ipagId) {
             alert("Erro no cadastro: Link expirado")
 
-        } else if (cpf.length == 0 || cnpj.length == 0) {
+        } else if (cpf.length == 0 && cnpj.length == 0) {
             setMessage("Escreva um CNPJ ou um CPF válido")
         } else if (cpfIsValid.current && cnpjIsValidRef.current) {
             setMessage("Use apenas o CNPJ ou CPF")
+        }else if (tel.length < 10){
+            console.log("telefone invalid")
+            setMessage("telefone inválido")
         }
         setIsLoading(false)
 
@@ -127,7 +144,7 @@ const PreCadastroFormCard = ({ ipagId }) => {
     return (
         <MDBCard  >
             <Formik
-                initialValues={{ nome: '', sobrenome: '', email: '', senha: '', senhaConfirmar: '', tel: '' }}
+                initialValues={{ nome: '', sobrenome: '', email: '', senha: '', senhaConfirmar: ''}}
                 onSubmit={(values) => handleSubmit(values)}
                 validationSchema={validationSchema}
             >
@@ -203,11 +220,11 @@ const PreCadastroFormCard = ({ ipagId }) => {
                                     <MDBInput
                                         type='text'
                                         label='Telefone'
-                                        onChange={handleChange('tel')}
-                                        onBlur={handleBlur('tel')}
-                                        value={values.tel}
+                                        onChange={(e) => phoneMask(e.target.value)}
+                                        
+                                        value={tel}
                                     />
-                                    <div style={{ color: '#DC4C64' }}>{touched.tel && errors.tel}</div>
+                                   
                                 </MDBCol>
                             </MDBRow>
                             <MDBRow className='mb-4'>

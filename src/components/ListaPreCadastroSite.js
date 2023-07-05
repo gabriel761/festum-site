@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody, MDBSpinner } from 'mdb-react-ui-kit';
 import { getFornecedores, tratarString } from '../api/getFornecedores';
 import { Link } from 'react-router-dom';
+import { apiIpag } from '../api/apiIpag';
 const ListaPreCadastroSite = () => {
     const [data, setData] = useState([])
     const [isLoading, setIsLoading] = useState(false)
@@ -10,11 +11,33 @@ const ListaPreCadastroSite = () => {
         setIsLoading(true)
         getFornecedores("/fornecedoresSemDistanciaPreCadastro").then((result) => {
             console.log("data fornecedores: ", result.data)
-            const newData = result.data
-            console.log("data fornecedores: ", newData)
-            setIsLoading(false)
+            const fornecedoresPreCadastrados = result.data
+            console.log("data fornecedores: ", fornecedoresPreCadastrados)
+            
             setMessage('')
-            setData(newData)
+           
+            apiIpag.request({
+                url:"/service/resources/subscriptions?status=paid",
+                method:'GET'
+            }).then((result) => {
+                console.log("get assinaturas: ", result.data.data)
+                const assinaturas = result.data.data
+                const assinaturasIpagEmails = []
+                assinaturas.forEach(assinatura => {
+                    assinaturasIpagEmails.push(assinatura.attributes.customer.attributes.email)   
+                });
+                console.log("assinaturas ipag: ", assinaturasIpagEmails)
+                let fornecedoresParaLista = []
+                let fornecedoresParaBancoDeDados = []
+                fornecedoresPreCadastrados.forEach(precadastro => {
+                    if(assinaturasIpagEmails.includes(precadastro.email)){
+                        fornecedoresParaLista.push(precadastro) 
+                    }
+                })
+                setData(fornecedoresParaLista)
+                setIsLoading(false)
+
+            })
             if(newData.length == 0){
                 setMessage("Não há mais fornecedores com o pré-cadastro pendente")
             }
@@ -39,6 +62,7 @@ const ListaPreCadastroSite = () => {
                     <tr>
                         <th scope='col'>Nome Completo</th>
                         <th scope='col'>E-mail</th>
+                        <th scope='col'>Telefone</th>
                         <th scope='col'>Status da conta</th>
                         <th scope='col'>Ações</th>
                     </tr>
@@ -55,6 +79,9 @@ const ListaPreCadastroSite = () => {
                                 </td>
                                 <td>
                                     <p className='text-muted mb-0'>{item.email}</p>
+                                </td>
+                                <td>
+                                    <p className='text-muted mb-0'>{item.telefone}</p>
                                 </td>
                                 <td>
 

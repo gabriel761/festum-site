@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MDBBtn, MDBContainer, MDBRow, MDBCol } from 'mdb-react-ui-kit';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Table from './pages/Table'
@@ -13,29 +13,56 @@ import ConfirmacaoPreCadastro from './pages/ConfirmacaoPreCadastro';
 import EmailConfirmado from './pages/EmailConfirmado';
 import PagamentoConfirmadoCard from './components/PagamentoConfirmadoCard';
 import PagamentoConfirmado from './pages/PagamentoConfirmado';
+import ShowNavbarComponet from './components/ShowNavbarComponent';
+import { UserContext } from './context/UserContext';
+import CryptoJS from 'crypto-js';
+
+
+
+function Private({ Item, signed, setSigned }) {
+
+  // crio uma variavel boleana e comparo o objeto de usuario do banco de dados com um objeto criptografado
+  const token = localStorage.getItem("token-festum")
+  if(token){
+    const bytes = CryptoJS.AES.decrypt(token, "Web033F1")
+    const forJson = bytes.toString(CryptoJS.enc.Utf8)
+    console.log("for json: ", forJson)
+    const normalText = JSON.parse(forJson)
+    console.log("texto descriptografado: ", normalText)
+    if(forJson == '{"pk_id":356,"nome":"admin","sobrenome":"festum","email":"admin@festum.com.br","id_firebase":"senha1","tipo_pessoa":"admin"}'){
+      setSigned(true)
+    }
+  }
+ 
+
+  return signed ? <Item /> : <Login />
+}
 
 function App() {
-
+  const [signed, setSigned] = useState(false)
   return (
-    
-        <MDBContainer fluid>
-          <Router>
-            <MDBContainer className='mb-5'>
+
+    <MDBContainer fluid>
+      <UserContext.Provider value={setSigned}>
+        <Router>
+          <MDBContainer className='mb-5'>
+            <ShowNavbarComponet signed={signed}>
               <Navbar />
-            </MDBContainer>
-            <Routes>
-              <Route path='/' element={<Login />} />
-              <Route path='/table' element={<Table />} />
-              <Route path='/lista-precadastro' element={<PreCadastroLista />} />
-              <Route path='/form-precadastro' element={<PreCadastroForm />} />
-              <Route path='/cadastro-fornecedor' element={<CadastroFornecedor />} />
-              <Route path='/criar-link' element={<CriarLink />} />
-              <Route path='/confirmacao-precadastro' element={<ConfirmacaoPreCadastro />} />
-              <Route path='/email-confirmado' element={<EmailConfirmado />} />
-              <Route path='/pagamento-confirmado' element={<PagamentoConfirmado/>} />
-            </Routes>
-          </Router>
-        </MDBContainer>
+            </ShowNavbarComponet>
+          </MDBContainer>
+          <Routes>
+            <Route path='/' element={<Login />} />
+            <Route path='/lista-precadastro' element={<Private setSigned={setSigned} signed={signed} Item={PreCadastroLista} />} />
+            <Route path='/form-precadastro' element={<PreCadastroForm />} />
+            <Route path='/cadastro-fornecedor' element={<CadastroFornecedor />} />
+            <Route path='/criar-link' element={<Private setSigned={setSigned} signed={signed} Item={CriarLink} />} />
+            <Route path='/confirmacao-precadastro' element={<ConfirmacaoPreCadastro />} />
+            <Route path='/email-confirmado' element={<EmailConfirmado />} />
+            <Route path='/pagamento-confirmado' element={<PagamentoConfirmado />} />
+          </Routes>
+        </Router>
+      </UserContext.Provider>
+    </MDBContainer>
   );
 }
 
