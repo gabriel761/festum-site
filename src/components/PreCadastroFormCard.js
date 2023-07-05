@@ -27,19 +27,20 @@ const PreCadastroFormCard = ({ ipagId }) => {
     const [tel, setTel] = useState('')
     const [message, setMessage] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [checkboxTermos, setCheckboxTermos] = useState(false)
 
 
     const cnpjIsValidRef = useRef(false)
     const cpfIsValid = useRef(false)
 
-   
+
     const yupObject = {
         nome: yup.string().required("Campo obrigatório"),
         sobrenome: yup.string().required("Campo obrigatório"),
         email: yup.string().required("Campo obrigatório").email("E-mail inválido"),
         senha: yup.string().required("Campo obrigatório").min(6, "Mínimo de 6 letras"),
         senhaConfirmar: yup.string().required("Campo obrigatório").oneOf([yup.ref("senha")], "As senhas não coincidem"),
-        
+
     }
 
     const validationSchema = yup.object(yupObject)
@@ -69,11 +70,11 @@ const PreCadastroFormCard = ({ ipagId }) => {
     }
     const phoneMask = (value) => {
         if (!value) return ""
-        value = value.replace(/\D/g,'')
-        value = value.replace(/(\d{2})(\d)/,"($1) $2")
-        value = value.replace(/(\d)(\d{4})$/,"$1-$2")
-        setTel(value) 
-      }
+        value = value.replace(/\D/g, '')
+        value = value.replace(/(\d{2})(\d)/, "($1) $2")
+        value = value.replace(/(\d)(\d{4})$/, "$1-$2")
+        setTel(value)
+    }
     function maskCPF(cpf) {
         cpf = cpf.replace(/\D/g, "")
         cpf = cpf.replace(/(\d{3})(\d)/, "$1.$2")
@@ -101,25 +102,25 @@ const PreCadastroFormCard = ({ ipagId }) => {
     const handleSubmit = async (values) => {
         setIsLoading(true)
 
-        if (ipagId && ((cpfIsValid.current || cnpjIsValidRef.current) && !(cpfIsValid.current && cnpjIsValidRef.current) && tel.length >= 10)) {
+        if (ipagId && ((cpfIsValid.current || cnpjIsValidRef.current) && !(cpfIsValid.current && cnpjIsValidRef.current) && tel.length >= 10 && checkboxTermos)) {
             setMessage('')
             if (cpfIsValid.current) {
                 values = { ...values, cpf_cnpj: cpf, ipagId }
             } else {
                 values = { ...values, cpf_cnpj: cnpj, ipagId }
             }
-            values = {...values, tel}
+            values = { ...values, tel }
             let redirectLink = "https://" + 'festum-site.vercel.app' + "/email-confirmado?values=" + JSON.stringify(values)
             redirectLink = encodeURI(redirectLink)
             console.log(redirectLink)
-            try {   
+            try {
                 const result = await efetuarPreCadastroSite(values, redirectLink)
                 console.log('Result: ', result);
-                
-                window.location.href= window.location.origin + "/confirmacao-precadastro";
+                setMessage(result.message)
+                window.location.href = window.location.origin + "/confirmacao-precadastro";
                 setIsLoading(false)
             } catch (e) {
-             setMessage(e.message)   
+                setMessage(e.message)
             }
 
         } else if (!ipagId) {
@@ -129,7 +130,9 @@ const PreCadastroFormCard = ({ ipagId }) => {
             setMessage("Escreva um CNPJ ou um CPF válido")
         } else if (cpfIsValid.current && cnpjIsValidRef.current) {
             setMessage("Use apenas o CNPJ ou CPF")
-        }else if (tel.length < 10){
+        }else if(!checkboxTermos){
+            setMessage("É necessário aceitar os termos e condições para prosseguir")
+        }else if (tel.length < 10) {
             console.log("telefone invalid")
             setMessage("telefone inválido")
         }
@@ -144,7 +147,7 @@ const PreCadastroFormCard = ({ ipagId }) => {
     return (
         <MDBCard  >
             <Formik
-                initialValues={{ nome: '', sobrenome: '', email: '', senha: '', senhaConfirmar: ''}}
+                initialValues={{ nome: '', sobrenome: '', email: '', senha: '', senhaConfirmar: '' }}
                 onSubmit={(values) => handleSubmit(values)}
                 validationSchema={validationSchema}
             >
@@ -221,10 +224,10 @@ const PreCadastroFormCard = ({ ipagId }) => {
                                         type='text'
                                         label='Telefone'
                                         onChange={(e) => phoneMask(e.target.value)}
-                                        
+
                                         value={tel}
                                     />
-                                   
+
                                 </MDBCol>
                             </MDBRow>
                             <MDBRow className='mb-4'>
@@ -257,6 +260,12 @@ const PreCadastroFormCard = ({ ipagId }) => {
                                         value={values.senhaConfirmar}
                                     />
                                     <div style={{ color: '#DC4C64' }}>{touched.senhaConfirmar && errors.senhaConfirmar}</div>
+                                </MDBCol>
+                            </MDBRow>
+                            <MDBRow className='mb-5'>
+                                <MDBCol md={12}>
+                                    <MDBCheckbox onChange={(e) => setCheckboxTermos(e.target.value)} value={checkboxTermos} label='Eu concordo com os termos e condições' id='invalidCheck'/>
+                                    <MDBCardLink target='_blank' href='https://drive.google.com/file/d/1mZGSubTrJUI-V-lwnmm_pMgy-muP0c-e/view?usp=drive_link' style={{textDecoration: "underline", marginLeft: 10}}> Ler termos e condições</MDBCardLink>
                                 </MDBCol>
                             </MDBRow>
                             {isLoading ?

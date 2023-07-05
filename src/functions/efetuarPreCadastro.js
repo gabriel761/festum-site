@@ -29,6 +29,7 @@ export const efetuarPreCadastroSite = async (values, redirectLink) => {
 
     console.log("erro no cadastro: ",e)
     message = verifyErrorCode(e.code)
+    return { message, isLoading }
 
   }
   return { message, isLoading }
