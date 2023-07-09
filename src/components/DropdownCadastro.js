@@ -37,7 +37,7 @@ const DropdownCadastro = ({ data, setEscolhidos, escolhidos, getSubcategorias })
         <MDBDropdownMenu style={{ maxHeight: 400, overflow: "auto" }}>
             {data.map((item, index) => {
                 return (
-                    <MDBDropdownItem key={item.pk_id} onClick={() => escolherItem(item)} className='dropdown-item'>{item.nome}</MDBDropdownItem>
+                    <MDBDropdownItem key={index} onClick={() => escolherItem(item)} className='dropdown-item'>{item.nome?item.nome:item}</MDBDropdownItem>
                 )
             })}
         </MDBDropdownMenu>

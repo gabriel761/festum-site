@@ -1,6 +1,6 @@
 //import { View, FlatList, TouchableOpacity, Image, StyleSheet, Text } from "react-native";
 //import * as ImagePicker from "expo-image-picker"
-import { MDBCol, MDBRow, MDBCardImage } from "mdb-react-ui-kit";
+import { MDBCol, MDBRow, MDBCardImage, MDBCardTitle } from "mdb-react-ui-kit";
 import { useRef, useState } from "react";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // Limite de 5MB
@@ -54,7 +54,7 @@ const UploadGaleria = ({ galeria, setGaleria }) => {
 
     return (
         <div>
-            <p style={styles.text}>Adicione imagens à sua galeria</p>
+            <MDBCardTitle style={styles.text}>Adicione imagens à sua galeria</MDBCardTitle>
             <MDBRow className="grid" style={styles.row}>
                 {data.map((item, index ) => (
                         <MDBCol className="g-col-2"  onClick={() => removeImage(item)} style={styles.card} key={index}>
@@ -98,11 +98,7 @@ const styles = {
         justifyContent: "space-between",
         alignItems: "center"
     },
-    text: {
-        fontSize: 12,
-        fontFamily: "proxima-nova-regular",
-        color: "#9a9a99"
-    },
+    
     botaoMais: {
         width: 35,
         height: 35,

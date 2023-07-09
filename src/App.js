@@ -16,6 +16,7 @@ import PagamentoConfirmado from './pages/PagamentoConfirmado';
 import ShowNavbarComponet from './components/ShowNavbarComponent';
 import { UserContext } from './context/UserContext';
 import CryptoJS from 'crypto-js';
+import AdicionarProduto from './pages/AdicionarProduto';
 
 
 
@@ -56,6 +57,7 @@ function App() {
             <Route path='/confirmacao-precadastro' element={<ConfirmacaoPreCadastro />} />
             <Route path='/email-confirmado' element={<EmailConfirmado />} />
             <Route path='/pagamento-confirmado' element={<PagamentoConfirmado />} />
+            <Route path='/adicionar-produto' element={<AdicionarProduto />} />
           </Routes>
         </Router>
       </UserContext.Provider>

@@ -13,7 +13,7 @@ const ListaCategoriasEscolhidas = ({data, setData}) => {
                 data.map((item, index) => {
                     return (
                         <MDBBtn style={{height: 40}} onClick={() => removeItem(item)} key={index} outline rounded color='secondary'>
-                            {item.nome}
+                            {item.nome?item.nome:item}
                         </MDBBtn>
                     )
                 }

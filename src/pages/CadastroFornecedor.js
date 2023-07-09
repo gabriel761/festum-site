@@ -210,25 +210,25 @@ const CadastroFornecedor = () => {
     const handleSubmit = (values) => {
         console.log("entrou no submit")
         setIsLoading(true)
-        getCoordinates().then((data) => {
+        getCoordinates().then(async(data) => {
             let newValues
             if (data.location && data.finalAddress.length > 5 && perfilImage && segmentos.length != 0 && categorias.length != 0 && subcategorias.length != 0 && ((cpf || cnpjIsValidRef.current) && !(cpf && cnpjIsValidRef.current)) && formaPagamento.length != 0 && horarioFuncionamento != 0 && descricaoLoja != 0) {
                 console.log("handle submit")
                 let dadosInteresse = { horarioFuncionamento, prazoProducao: prazoProducao + " " + prazoProducaoTipoRef.current, prazoEntrega: prazoEntrega + " " + prazoEntregaTipoRef.current, fazEntrega }
                 console.log("dados de interesse: ", dadosInteresse)
-                newValues = { ...values, nome: fornecedor.nome, sobrenome: fornecedor.sobrenome, email: fornecedor.email, id: fornecedor.pk_id, localizacao: JSON.stringify(data.location), endereco: data.finalAddress, cidade, segmentos: segmentos, categorias: categorias, subcategorias: subcategorias, cnpj: cnpjRef.current, tipoTel: tipoTel, imagem: perfilImage, cep, galeria, imagemFundo, formaPagamento: JSON.stringify(formaPagamento), descricaoLoja, dadosInteresse: JSON.stringify(dadosInteresse), statusConta: "Ativo" }
+                newValues = { ...values, nome: fornecedor.nome, sobrenome: fornecedor.sobrenome, email: fornecedor.email, id: fornecedor.pk_id, localizacao: JSON.stringify(data.location), endereco: data.finalAddress, cidade, segmentos: segmentos, categorias: categorias, subcategorias: subcategorias, cnpj: cnpjRef.current, tipoTel: tipoTel, imagem: perfilImage, cep, galeria, imagemFundo, formaPagamento: JSON.stringify(formaPagamento), descricaoLoja, dadosInteresse: JSON.stringify(dadosInteresse), statusConta: "ativo" }
                 if (cpf) {
                     newValues.cnpj = null;
                     newValues = { ...newValues, cpf: cpf }
-                    efetuarCadastroFornecedor(newValues)
+                    await efetuarCadastroFornecedor(newValues)
                     setIsLoading(false)
                     setMessage('')
                     alert("Cadastro completado com sucesso!")
                     navigate("/lista-precadastro")
                 } else {
-                    postDataFromDatabase("/getCnpj", newValues.cnpj).then((result) => {
+                    postDataFromDatabase("/getCnpj", newValues.cnpj).then(async (result) => {
                         if (!result.data.error) {
-                            efetuarCadastroFornecedor(newValues)
+                           await efetuarCadastroFornecedor(newValues)
                             setIsLoading(false)
                             setMessage('')
                             alert("Cadastro completado com sucesso!")

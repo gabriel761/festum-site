@@ -23,13 +23,13 @@ export default function Tabs({fillActive, setFillActive}) {
       <MDBContainer>
         <MDBTabs fill className='mb-3 shadow-4'>
           <MDBTabsItem >
-            <MDBTabsLink className='shadow-2-strong' onClick={() => handleFillClick('tab1')} active={fillActive === 'tab1'}>
-              Clientes
+            <MDBTabsLink className='shadow-2-strong' onClick={() => handleFillClick('Cadastro incompleto site')} active={fillActive === 'Cadastro incompleto site'}>
+              Cadastros incompletos
             </MDBTabsLink>
           </MDBTabsItem>
           <MDBTabsItem >
-            <MDBTabsLink className='shadow-2-strong' onClick={() => handleFillClick('tab2')} active={fillActive === 'tab2'}>
-              Fornecedores
+            <MDBTabsLink className='shadow-2-strong' onClick={() => handleFillClick('ativo')} active={fillActive === 'ativo'}>
+              Contas Ativas
             </MDBTabsLink>
           </MDBTabsItem>
         </MDBTabs>
