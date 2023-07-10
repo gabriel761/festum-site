@@ -27,7 +27,7 @@ function Private({ Item, signed, setSigned }) {
   if(token){
     const bytes = CryptoJS.AES.decrypt(token, "Web033F1")
     const forJson = bytes.toString(CryptoJS.enc.Utf8)
-    if(forJson == '{"pk_id":356,"nome":"admin","sobrenome":"festum","email":"admin@festum.com.br","id_firebase":"Web033F1","tipo_pessoa":"admin"}'){
+    if(forJson == '{"pk_id":368,"nome":"admin","sobrenome":"festum","email":"admin@festum.com.br","id_firebase":"Web033F1","tipo_pessoa":"admin"}'){
       setSigned(true)
     }
   }
