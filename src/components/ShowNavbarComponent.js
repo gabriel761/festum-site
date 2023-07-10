@@ -17,7 +17,7 @@ const ShowNavbarComponent = ({ children, signed }) => {
         }
 
         console.log("this is location: ", location)
-        if (location.pathname == "/" || location.pathname == "/form-precadastro" || location.pathname == "/confirmacao-precadastro" || location.pathname == "email-confirmado" || !signed) {
+        if (location.pathname == "/" || location.pathname == "/form-precadastro" || location.pathname == "/confirmacao-precadastro" || location.pathname == "/email-confirmado" || location.pathname == "/pagamento-confirmado" || !signed) {
             setShowNavbar(false)
         } else {
             setShowNavbar(true)
