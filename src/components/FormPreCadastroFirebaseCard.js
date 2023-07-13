@@ -63,7 +63,7 @@ const FormPreCadstroFirebaseCard = () => {
                     auth.createUserWithEmailAndPassword(values.email, values.senha).then(() => {
                         auth.currentUser.sendEmailVerification({
                             handleCodeInApp: false,
-                            url: "https://festum-site.vercel.app/email-confirmado"
+                            url: window.location.origin +"/email-confirmado"
 
                         }).then(() => {
                             updateFirebaseId(auth.currentUser.uid, auth.currentUser.email).then(() => {
