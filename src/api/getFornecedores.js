@@ -6,6 +6,14 @@ const getFornecedores = (url) => {
     }))
 } 
 
+const getFornecedoresToken = (url, token) => {
+    return(  api.request({
+         method: "GET",
+         url: url,
+         headers: {Authorization: "Bearer " + token}
+     }))
+ }
+
 const tratarString = (data) => {
    const newData = data.map((item) => {
         item.nome_loja = item.nome_loja.trim()
@@ -16,4 +24,4 @@ const tratarString = (data) => {
    return newData
 }
 
-export {getFornecedores, tratarString}
+export {getFornecedores, tratarString, getFornecedoresToken}

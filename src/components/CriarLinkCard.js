@@ -47,10 +47,11 @@ useEffect(()=> {
     }
 
     const selectPlan = (item) => {
+        console.log("plano: ", item)
         const selected = item.id
         if(isSelected != selected){
             setIsSelected(selected)
-            setLinkIpag(item.id)
+            setLinkIpag(item.attributes.links.payment)
         }else{
             setIsSelected("")
         }
@@ -61,7 +62,7 @@ useEffect(()=> {
         console.log("entrou no handle click")
         if (linkIpag.length != 0) {
             console.log("entrou no if")
-            let linkCompletoTem = window.location.host + "/form-precadastro?link=" + linkIpag
+            let linkCompletoTem = linkIpag
             setLinkCompleto(linkCompletoTem)
 
         }
