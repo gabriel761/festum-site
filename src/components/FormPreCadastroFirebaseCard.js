@@ -19,12 +19,13 @@ import { postFornecedores } from '../api/postFornecedores'
 import { auth } from "../services/firebase";
 import api from '../api/api';
 import verifyErrorCode from '../services/verifyErrorCode';
+import { useNavigate } from 'react-router-dom';
 
 
 
 
 const FormPreCadstroFirebaseCard = () => {
-
+    const navigate = useNavigate();
     const [message, setMessage] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [checkboxTermos, setCheckboxTermos] = useState(false)
@@ -59,17 +60,18 @@ const FormPreCadstroFirebaseCard = () => {
             console.log("values: ", values.senha)
             postFornecedores('/checkIfEmailExists', { email: values.email }).then((response) => {
                 if (response.data.emailExists) {
-                    
+
                     auth.createUserWithEmailAndPassword(values.email, values.senha).then(() => {
                         auth.currentUser.sendEmailVerification({
                             handleCodeInApp: false,
-                            url: window.location.origin +"/email-confirmado"
+                            url: window.location.origin + "/email-confirmado"
 
                         }).then(() => {
                             updateFirebaseId(auth.currentUser.uid, auth.currentUser.email).then(() => {
                                 setMessage('')
                                 setIsLoading(false)
-                                window.location.href = window.location.origin + "/confirmacao-precadastro"
+                                
+                                navigate('/confirmacao-precadastro');
                             }).catch((e) => {
                                 setIsLoading(false)
                                 console.log("erro ao atualizar o firebase id: ", e)
@@ -92,7 +94,7 @@ const FormPreCadstroFirebaseCard = () => {
                 } else {
                     setMessage("Por favor digite o mesmo e-mail utilizado no pagamento")
                 }
-                
+
             }).catch((e) => {
                 setIsLoading(false)
                 console.log(e)
@@ -104,7 +106,7 @@ const FormPreCadstroFirebaseCard = () => {
 
     return (
         <MDBCard className='w-100 p-3' >
-            <MDBIcon className='ms-1 mb-4 d-flex justify-content-center' color='primary'  icon='check' size='4x' />
+            <MDBIcon className='ms-1 mb-4 d-flex justify-content-center' color='primary' icon='check' size='4x' />
             <h3 className='text-center'>Pagamento Confirmado!</h3>
             <MDBCardText className='text-center mx-5'>Crie uma senha e confirme seu e-mail para sua conta no aplicativo Festum!</MDBCardText>
             <Formik

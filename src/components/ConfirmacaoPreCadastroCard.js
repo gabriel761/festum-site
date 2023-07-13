@@ -16,6 +16,7 @@ import { auth } from '../services/firebase';
 
 const ConfirmacaoPreCadastroCard = () => {
     const [showInputEmail, setShowInputEmail] = useState(false)
+    console.log("auth firebase: ", auth)
     return (
         <MDBCard  >
             <MDBCardBody>
