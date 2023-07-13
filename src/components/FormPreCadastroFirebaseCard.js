@@ -92,6 +92,7 @@ const FormPreCadstroFirebaseCard = () => {
 
 
                 } else {
+                    setIsLoading(false)
                     setMessage("Por favor digite o mesmo e-mail utilizado no pagamento")
                 }
 
