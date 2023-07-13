@@ -11,7 +11,7 @@ const ListaPreCadastroSite = ({ statusConta }) => {
 
     useEffect(() => {
         setIsLoading(true)
-
+        console.log("status conta vindo do route:", statusConta)
         getFornecedores("/fornecedoresSemDistanciaPreCadastroComStatus/" + statusConta).then(async (result) => {
             console.log("data fornecedores: ", result.data)
             const fornecedoresPreCadastrados = result.data
@@ -19,13 +19,15 @@ const ListaPreCadastroSite = ({ statusConta }) => {
             messageRef.current = ''
             if (fornecedoresPreCadastrados.length == 0) {
                 setIsLoading(false)
-                messageRef.current = "Não há mais fornecedores com o pré-cadastro pendente"
+                messageRef.current = "Não há fornecedores com esse status de conta"
+                setData([])
             } else {
-                let fornecedoresParaLista = await compararContasPreCadastradasComContasPagasDoIpag(fornecedoresPreCadastrados)
-                if (fornecedoresParaLista.length == 0) {
-                    messageRef.current = "Não há mais fornecedores com este status"
-                }
-                setData(fornecedoresParaLista)
+                //let fornecedoresParaLista = await compararContasPreCadastradasComContasPagasDoIpag(fornecedoresPreCadastrados)
+                // if (fornecedoresParaLista.length == 0) {
+                //     messageRef.current = "Não há mais fornecedores com este status"
+                // }
+                // setData(fornecedoresParaLista)
+                setData(fornecedoresPreCadastrados)
                 setIsLoading(false)
             }
         }).catch((e) => {
@@ -45,6 +47,20 @@ const ListaPreCadastroSite = ({ statusConta }) => {
                 break;
             default:
                 return "";
+
+        }
+    }
+    const chooseColorStatusPagamento = (statusPagamento) => {
+        switch (statusPagamento) {
+            case "recusado":
+                return "danger"; // amarelo
+                break;
+            case "ativo":
+            case "aprovado e capturado":
+                return "success";//verde
+                break;
+            default:
+                return "warning";
 
         }
     }
@@ -131,6 +147,7 @@ const ListaPreCadastroSite = ({ statusConta }) => {
                             <th scope='col'>Nome Completo</th>
                             <th scope='col'>E-mail</th>
                             <th scope='col'>Telefone</th>
+                            <th scope='col'>Status de pagamento</th>
                             <th scope='col'>Status da conta</th>
                             <th scope='col'>Ações</th>
                         </tr>
@@ -150,6 +167,13 @@ const ListaPreCadastroSite = ({ statusConta }) => {
                                     </td>
                                     <td>
                                         <p className='text-muted mb-0'>{item.telefone}</p>
+                                    </td>
+                                    <td>
+
+                                        <MDBBadge color={chooseColorStatusPagamento(item.status_pagamento)} pill>
+                                            {item.status_pagamento}
+                                        </MDBBadge>
+
                                     </td>
                                     <td>
 

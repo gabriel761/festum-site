@@ -19,7 +19,7 @@ const EmailConfirmadoCard = () => {
             <MDBCardBody>
             <MDBIcon className='ms-1 mb-4 d-flex justify-content-center' color='primary'  icon='check' size='4x' />
             <h3 className='text-center'>Email Confirmado!</h3>
-            <p className='text-center'>Aguarde redirecionamento para a pagina de pagamento</p>
+            <p className='text-center'>Você completou todas as etapas do pré-cadastro! Aguarde o contato de um de nossos funcionários.</p>
             
                 {showInputEmail &&
                     <form>

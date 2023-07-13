@@ -16,6 +16,7 @@ import { Formik } from 'formik';
 import { efetuarPreCadastroSite } from '../functions/efetuarPreCadastro';
 import { useState, useRef, useEffect } from 'react';
 import { verificarCPF, validarCNPJ } from '../functions/verificacoesFornecedor';
+import verifyErrorCode from '../services/verifyErrorCode';
 
 
 
@@ -114,11 +115,18 @@ const PreCadastroFormCard = ({ ipagId }) => {
             redirectLink = encodeURI(redirectLink)
             console.log(redirectLink)
             try {
-                const result = await efetuarPreCadastroSite(values, redirectLink)
-                console.log('Result: ', result);
-                setMessage(result.message)
-                window.location.href = window.location.origin + "/confirmacao-precadastro";
-                setIsLoading(false)
+                efetuarPreCadastroSite(values, redirectLink).then((result) => {
+                    console.log('Result: ', result);
+                    setMessage(result.message)
+                    if(!result.error){
+                        window.location.href = window.location.origin + "/confirmacao-precadastro";
+                    }
+                   
+                    setIsLoading(false)
+                }).catch((e) => {
+                    console.log("erro de pré cadastro no site: ",verifyErrorCode(e.code) )
+                })
+
             } catch (e) {
                 setMessage(e.message)
             }
@@ -130,9 +138,9 @@ const PreCadastroFormCard = ({ ipagId }) => {
             setMessage("Escreva um CNPJ ou um CPF válido")
         } else if (cpfIsValid.current && cnpjIsValidRef.current) {
             setMessage("Use apenas o CNPJ ou CPF")
-        }else if(!checkboxTermos){
+        } else if (!checkboxTermos) {
             setMessage("É necessário aceitar os termos e condições para prosseguir")
-        }else if (tel.length < 10) {
+        } else if (tel.length < 10) {
             console.log("telefone invalid")
             setMessage("telefone inválido")
         }
@@ -264,8 +272,8 @@ const PreCadastroFormCard = ({ ipagId }) => {
                             </MDBRow>
                             <MDBRow className='mb-5'>
                                 <MDBCol md={12}>
-                                    <MDBCheckbox onChange={(e) => setCheckboxTermos(e.target.value)} value={checkboxTermos} label='Eu concordo com os termos e condições' id='invalidCheck'/>
-                                    <MDBCardLink target='_blank' href='https://drive.google.com/file/d/1mZGSubTrJUI-V-lwnmm_pMgy-muP0c-e/view?usp=drive_link' style={{textDecoration: "underline", marginLeft: 10}}> Ler termos e condições</MDBCardLink>
+                                    <MDBCheckbox onChange={(e) => setCheckboxTermos(e.target.value)} value={checkboxTermos} label='Eu concordo com os termos e condições' id='invalidCheck' />
+                                    <MDBCardLink target='_blank' href='https://drive.google.com/file/d/1mZGSubTrJUI-V-lwnmm_pMgy-muP0c-e/view?usp=drive_link' style={{ textDecoration: "underline", marginLeft: 10 }}> Ler termos e condições</MDBCardLink>
                                 </MDBCol>
                             </MDBRow>
                             {isLoading ?

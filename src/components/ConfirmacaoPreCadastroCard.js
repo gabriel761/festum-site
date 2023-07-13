@@ -10,6 +10,8 @@ import {
 } from 'mdb-react-ui-kit';
 import "../index.css"
 import { useState } from 'react';
+import { auth } from '../services/firebase';
+
 
 
 const ConfirmacaoPreCadastroCard = () => {

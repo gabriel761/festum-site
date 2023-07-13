@@ -7,7 +7,7 @@ import api from "../api/api";
 
 
 let message = ''
-let isLoading = false
+let error = false
 export const efetuarPreCadastroSite = async (values, redirectLink) => {
   console.log("values dentro do efetuar cadastro: ", values)
   console.log("credentials dentro do efetuar cadastro: ", values)
@@ -25,14 +25,15 @@ export const efetuarPreCadastroSite = async (values, redirectLink) => {
     console.log("current user cadastro cliente: ", currentUser)
     await updateFirebaseId(currentUser.uid, currentUser.email)
     auth.signOut()
+    return { message, error }
   } catch (e) {
-
+    throw(e)
     console.log("erro no cadastro: ",e)
     message = verifyErrorCode(e.code)
-    return { message, isLoading }
+    return { message, error }
 
   }
-  return { message, isLoading }
+  
 }
 // função para fazer upload da imagem ao firebase
 const uploadImageToFirebase = async (newValues) => {
@@ -50,7 +51,8 @@ const uploadImageToFirebase = async (newValues) => {
     // send to back-end precisa ficar aqui pois é necessário pegar a url do upload da foto
     return newValues2
   } catch (e) {
-    isLoading = false
+    throw(e)
+    error = true
     console.log("image url error: ", e)
   }
 
@@ -70,7 +72,8 @@ const uploadFotoFundo = async (newValues) => {
     // send to back-end precisa ficar aqui pois é necessário pegar a url do upload da foto
     return newValues2
   } catch (e) {
-    isLoading = false
+    throw(e)
+    error = false
     console.log("image url error: ", e)
   }
 
@@ -100,7 +103,8 @@ const uploadGaleryToFirebase = async (newValues) => {
       const url = await getDownloadURL(metadata.ref)
       return url
     } catch (e) {
-      isLoading = false
+      throw(e)
+      error = true
       console.log("image url error: ", e)
     }
   }
@@ -117,7 +121,7 @@ const sendToBackEnd = async (values) => {
       // se for copiar para cadastro de cliente preste atenção nesta mensagem
       message = "Sem resposta do servidor"
       console.log("result data is empty")
-
+      error = true
       await auth.currentUser.delete()
     } else {
       if (!result.data.error) {
@@ -130,6 +134,7 @@ const sendToBackEnd = async (values) => {
         // avisar ao app que o proximo login será o login de um usuário que acabou de ser cadastrado. É só para não abrir o introSlider de novo. 
       } else {
         console.log("resposta do servidor: ", result.data)
+        error = true
         message = result.data.message
         await auth.currentUser.delete()
       }

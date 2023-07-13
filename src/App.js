@@ -17,6 +17,7 @@ import ShowNavbarComponet from './components/ShowNavbarComponent';
 import { UserContext } from './context/UserContext';
 import CryptoJS from 'crypto-js';
 import AdicionarProduto from './pages/AdicionarProduto';
+import FormPreCadastroFirebase from './pages/FormePreCadastroFirebase';
 
 
 
@@ -58,6 +59,7 @@ function App() {
             <Route path='/email-confirmado' element={<EmailConfirmado />} />
             <Route path='/pagamento-confirmado' element={<PagamentoConfirmado />} />
             <Route path='/adicionar-produto' element={<AdicionarProduto />} />
+            <Route path='/form-precadastro-firebase' element={<FormPreCadastroFirebase />} />
           </Routes>
         </Router>
       </UserContext.Provider>
