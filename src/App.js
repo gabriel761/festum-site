@@ -18,6 +18,7 @@ import { UserContext } from './context/UserContext';
 import CryptoJS from 'crypto-js';
 import AdicionarProduto from './pages/AdicionarProduto';
 import FormPreCadastroFirebase from './pages/FormePreCadastroFirebase';
+import DeepLinking from './pages/DeepLiking';
 
 
 
@@ -60,6 +61,7 @@ function App() {
             <Route path='/pagamento-confirmado' element={<PagamentoConfirmado />} />
             <Route path='/adicionar-produto' element={<AdicionarProduto />} />
             <Route path='/form-precadastro-firebase' element={<FormPreCadastroFirebase />} />
+            <Route path='/deeplinking' element={<DeepLinking />} />
           </Routes>
         </Router>
       </UserContext.Provider>
