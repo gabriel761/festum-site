@@ -3,7 +3,7 @@ const DeepLinking = () => {
         window.location.href = "festum://"
     }
     const redirecionamentoLogin = () => {
-        window.location.href = "festum://login"
+        window.location.href = "festum://--/login"
     }
     return ( 
         <div>
