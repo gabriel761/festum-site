@@ -212,7 +212,7 @@ const CadastroFornecedor = () => {
         setIsLoading(true)
         getCoordinates().then(async(data) => {
             let newValues
-            if (data.location && data.finalAddress.length > 5 && perfilImage && segmentos.length != 0 && categorias.length != 0 && subcategorias.length != 0 && ((cpf || cnpjIsValidRef.current) && !(cpf && cnpjIsValidRef.current)) && formaPagamento.length != 0 && horarioFuncionamento != 0 && descricaoLoja != 0) {
+            if (data.location && data.finalAddress.length > 5 && perfilImage && segmentos.length != 0 && categorias.length != 0 && subcategorias.length != 0 && ((cpfIsValid.current || cnpjIsValidRef.current) && !(cpfIsValid.current && cnpjIsValidRef.current)) && formaPagamento.length != 0 && horarioFuncionamento != 0 && descricaoLoja != 0) {
                 console.log("handle submit")
                 let dadosInteresse = { horarioFuncionamento, prazoProducao: prazoProducao + " " + prazoProducaoTipoRef.current, prazoEntrega: prazoEntrega + " " + prazoEntregaTipoRef.current, fazEntrega }
                 console.log("dados de interesse: ", dadosInteresse)
@@ -252,9 +252,11 @@ const CadastroFornecedor = () => {
             } else if (!perfilImage) {
                 setIsLoading(false)
                 setMessage("Adicione uma imagem para seu perfil")
-            } else if (!cpf || !values) {
+            } else if (!cpfIsValid.current && !cnpjIsValidRef.current) {
+                console.log("cpf: ", cpfIsValid.current)
+                console.log("cnpj: ", cnpjIsValidRef.current)
                 setIsLoading(false)
-                setMessage("CNPJ ou CPF inválido")
+                setMessage("Escreva um CNPJ ou CPF válido")
             } else if (formaPagamento.length == 0) {
                 setIsLoading(false)
                 setMessage("adicione uma forma de pagamento");
