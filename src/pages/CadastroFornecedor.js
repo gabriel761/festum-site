@@ -35,7 +35,7 @@ const CadastroFornecedor = () => {
 
     const navigate = useNavigate()
 
-    const [message, setMessage] = useState('')
+   // const [message,errorMessageRef.current =  = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [perfilImage, setPerfilImage] = useState(null);
     const [imagemFundo, setImagemFundo] = useState(null);
@@ -74,6 +74,7 @@ const CadastroFornecedor = () => {
     const cpfRef = useRef(null)
     const cpfIsValid = useRef(false)
     const subcategoriaSugestRef = useRef('')
+    const errorMessageRef = useRef('')
 
     let { state } = useLocation();
     const { fornecedor } = state
@@ -221,54 +222,66 @@ const CadastroFornecedor = () => {
                     newValues.cnpj = null;
                     newValues = { ...newValues, cpf: cpf }
                     await efetuarCadastroFornecedor(newValues)
-                    setIsLoading(false)
-                    setMessage('')
+                   
+                   errorMessageRef.current = ''
+                   setIsLoading(false)
                     alert("Cadastro completado com sucesso!")
                     navigate("/lista-precadastro")
                 } else {
                     postDataFromDatabase("/getCnpj", newValues.cnpj).then(async (result) => {
                         if (!result.data.error) {
                            await efetuarCadastroFornecedor(newValues)
-                            setIsLoading(false)
-                            setMessage('')
+                           
+                           errorMessageRef.current = ''
+                           setIsLoading(false)
                             alert("Cadastro completado com sucesso!")
                             navigate("/lista-precadastro")
                         }else{
-                            setIsLoading(false)
-                            setMessage(result.data.message)  
+                            
+                           errorMessageRef.current = result.data.message 
+                           setIsLoading(false)
                         }
 
                     }).catch((e) => {
-                        setIsLoading(false)
+                       
                         console.log("erro checando cnpj: ", e)
+                        setIsLoading(false)
                     })
                 }
             } else if (!data.location || data.finalAddress.length < 5) {
+                
+               errorMessageRef.current = "Endereço inválido"
                 setIsLoading(false)
-                setMessage("Endereço inválido")
             } else if (segmentos.length == 0 || categorias.length == 0 || subcategorias.length == 0) {
+                
+               errorMessageRef.current = "Escolha um segmento, categoria e subcategoria"
                 setIsLoading(false)
-                setMessage("Escolha um segmento, categoria e subcategoria")
             } else if (!perfilImage) {
+                
+               errorMessageRef.current = "Adicione uma imagem para seu perfil"
                 setIsLoading(false)
-                setMessage("Adicione uma imagem para seu perfil")
             } else if (!cpfIsValid.current && !cnpjIsValidRef.current) {
                 console.log("cpf: ", cpfIsValid.current)
                 console.log("cnpj: ", cnpjIsValidRef.current)
+                
+               errorMessageRef.current = "Escreva um CNPJ ou CPF válido"
                 setIsLoading(false)
-                setMessage("Escreva um CNPJ ou CPF válido")
             } else if (formaPagamento.length == 0) {
+                
+               errorMessageRef.current = "adicione uma forma de pagamento";
                 setIsLoading(false)
-                setMessage("adicione uma forma de pagamento");
             } else if (horarioFuncionamento.length == 0) {
+                
+               errorMessageRef.current = "Adicione um horario de funcionamento"
                 setIsLoading(false)
-                setMessage("Adicione um horario de funcionamento")
             } else if (descricaoLoja.length == 0) {
+                
+               errorMessageRef.current = "Escreva uma descrição para sua loja"
                 setIsLoading(false)
-                setMessage("Escreva uma descrição para sua loja")
             } else {
+                
+               errorMessageRef.current = "nenhuma mensagem de erro"
                 setIsLoading(false)
-                setMessage("nenhuma mensagem de erro")
             }
 
 
@@ -545,7 +558,7 @@ const CadastroFornecedor = () => {
                                             <MDBRow>
                                                 {!isLoading ?
                                                     <div className='col-md-12'>
-                                                        <div style={{ color: '#DC4C64' }}>{message}</div>
+                                                        <div style={{ color: '#DC4C64' }}>{errorMessageRef.current}</div>
                                                         <MDBBtn type='submit' style={{ marginRight: 20 }} onClick={handleSubmit}>Cadastrar Fornecedor</MDBBtn>
                                                     </div>
                                                     :
