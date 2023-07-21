@@ -74,6 +74,7 @@ const ListaPreCadastroSite = ({ statusConta }) => {
                 </Link>
                 ); // amarelo
                 break;
+            case "usuario ficticio":
             case "ativo":
                 return (
                     <Link to={{ pathname: "/adicionar-produto", }} state={{ fornecedor: item }}>
