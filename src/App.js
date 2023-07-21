@@ -19,6 +19,7 @@ import CryptoJS from 'crypto-js';
 import AdicionarProduto from './pages/AdicionarProduto';
 import FormPreCadastroFirebase from './pages/FormePreCadastroFirebase';
 import DeepLinking from './pages/DeepLiking';
+import CriarFornecedorFicticio from './pages/CriarFornecedorFicticio';
 
 
 
@@ -54,7 +55,7 @@ function App() {
             <Route path='/' element={<Login />} />
             <Route path='/lista-precadastro' element={<Private setSigned={setSigned} signed={signed} Item={PreCadastroLista} />} />
             <Route path='/form-precadastro' element={<PreCadastroForm />} />
-            <Route path='/cadastro-fornecedor' element={<CadastroFornecedor />} />
+            <Route path='/cadastro-fornecedor' element={<Private setSigned={setSigned} signed={signed} Item={CadastroFornecedor} />} />
             <Route path='/criar-link' element={<Private setSigned={setSigned} signed={signed} Item={CriarLink} />} />
             <Route path='/confirmacao-precadastro' element={<ConfirmacaoPreCadastro />} />
             <Route path='/email-confirmado' element={<EmailConfirmado />} />
@@ -62,6 +63,7 @@ function App() {
             <Route path='/adicionar-produto' element={<AdicionarProduto />} />
             <Route path='/form-precadastro-firebase' element={<FormPreCadastroFirebase />} />
             <Route path='/deeplinking' element={<DeepLinking />} />
+            <Route path='/criar-fornecedor-ficticio' element={<Private setSigned={setSigned} signed={signed} Item={CriarFornecedorFicticio} />} />
           </Routes>
         </Router>
       </UserContext.Provider>

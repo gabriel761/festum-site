@@ -46,7 +46,7 @@ const ListaPreCadastroSite = ({ statusConta }) => {
                 return "success";//verde
                 break;
             default:
-                return "";
+                return "warnig";
 
         }
     }

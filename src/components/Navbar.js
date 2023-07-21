@@ -53,6 +53,9 @@ export default function Navbar() {
             <MDBNavbarItem>
               <MDBNavbarLink active={location.pathname == "/criar-link"} onClick={() => logoff()}>Logoff</MDBNavbarLink>
             </MDBNavbarItem>
+            <MDBNavbarItem>
+              <MDBNavbarLink active={location.pathname == "/criar-fornecedor-ficticio"} href='/criar-fornecedor-ficticio'>Criar fonecedor fictício</MDBNavbarLink>
+            </MDBNavbarItem>
           </MDBNavbarNav>
         </MDBCollapse>
       </MDBContainer>
