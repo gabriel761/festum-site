@@ -131,7 +131,7 @@ const sendToBackEnd = async (values) => {
       
     } else {
       if (!result.data.error) {
-        message = "Estamos enviando um email de confirmação, aguarde...."
+        message = ""
 
         
         // haverá um login automático mas como o email ainda não foi confirmado a tela de confirmação de e-mail vai abrir
