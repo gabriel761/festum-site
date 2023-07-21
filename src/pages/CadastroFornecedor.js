@@ -152,7 +152,7 @@ const CadastroFornecedor = () => {
         let location = null
         console.log("final address: ", finalAddress)
         const result = await api.request({
-            url: "http://www.mapquestapi.com/geocoding/v1/address?key=EorR4RAXKIMPw2ePIu7bhWrROCmEoS1Q&location=" + finalAddress,
+            url: "https://www.mapquestapi.com/geocoding/v1/address?key=EorR4RAXKIMPw2ePIu7bhWrROCmEoS1Q&location=" + finalAddress,
             method: "get"
         })
         location = result.data.results[0].locations[0].latLng
