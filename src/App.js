@@ -20,6 +20,7 @@ import AdicionarProduto from './pages/AdicionarProduto';
 import FormPreCadastroFirebase from './pages/FormePreCadastroFirebase';
 import DeepLinking from './pages/DeepLiking';
 import CriarFornecedorFicticio from './pages/CriarFornecedorFicticio';
+import PreCadastroFormSemPagamento from './pages/PreCadastroSemPagamento';
 
 
 
@@ -64,6 +65,7 @@ function App() {
             <Route path='/form-precadastro-firebase' element={<FormPreCadastroFirebase />} />
             <Route path='/deeplinking' element={<DeepLinking />} />
             <Route path='/criar-fornecedor-ficticio' element={<Private setSigned={setSigned} signed={signed} Item={CriarFornecedorFicticio} />} />
+            <Route path='/form-precadastro-sempagamento' element={<PreCadastroFormSemPagamento/>} />
           </Routes>
         </Router>
       </UserContext.Provider>

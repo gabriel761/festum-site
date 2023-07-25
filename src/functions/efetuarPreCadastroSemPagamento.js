@@ -8,23 +8,18 @@ import api from "../api/api";
 
 let message = ''
 let error = false
-export const efetuarPreCadastroSite = async (values, redirectLink) => {
+export const efetuarPreCadastroSite = async (values) => {
   console.log("values dentro do efetuar cadastro: ", values)
   console.log("credentials dentro do efetuar cadastro: ", values)
-  console.log("redirect link: ", redirectLink)
   try {
     let newValues = {...values, statusConta: "Cadastro incompleto site"}
     //newValues = await uploadImageToFirebase(newValues)
     newValues = await sendToBackEnd(newValues)
       await auth.createUserWithEmailAndPassword(values.email, values.senha)
-      auth.currentUser.sendEmailVerification({
-        handleCodeInApp: false,
-        url: redirectLink
-      })
+      auth.currentUser.sendEmailVerification()
     let currentUser = auth.currentUser
     console.log("current user cadastro cliente: ", currentUser)
     await updateFirebaseId(currentUser.uid, currentUser.email)
-    auth.signOut()
     return { message, error }
   } catch (e) {
     throw(e)
@@ -125,7 +120,6 @@ const sendToBackEnd = async (values) => {
       await auth.currentUser.delete()
     } else {
       if (!result.data.error) {
-        error = false
         message = "Estamos enviando um email de confirmação, aguarde...."
 
         

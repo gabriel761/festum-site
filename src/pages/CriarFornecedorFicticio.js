@@ -69,6 +69,7 @@ const CriarFornecedorFicticio = () => {
     const [galeria, setGaleria] = useState([])
 
     const cepRef = useRef(null)
+    const cepValid = useRef(false)
     const cnpjInputRef = useRef(null)
     const cnpjRef = useRef(null)
     const cnpjIsValidRef = useRef(false)
@@ -124,6 +125,7 @@ const CriarFornecedorFicticio = () => {
     }, [])
 
     const onChangeCep = (value) => {
+        cepValid.current = false
         setCep(value)
         setCepMessage('')
         value = value.replace('-', '')
@@ -138,12 +140,14 @@ const CriarFornecedorFicticio = () => {
                     setBairro(data.bairro)
                     setRua(data.logradouro)
                     setCepMessage('')
+                    cepValid.current = true
                 } else {
                     setUf('')
                     setCidade('')
                     setBairro('')
                     setRua('')
                     setCepMessage('CEP inválido')
+                    cepValid.current = false
                 }
             })).catch((e) => {
                 console.log("erro do viacep: ", e)
@@ -177,7 +181,6 @@ const CriarFornecedorFicticio = () => {
 
         if (value.length == 18) {
             cnpjIsValidRef.current = validarCNPJ(value)
-
         } else {
             cnpjIsValidRef.current = false
         }
@@ -215,11 +218,11 @@ const CriarFornecedorFicticio = () => {
     }
 
     const handleSubmit = (values) => {
-        console.log("entrou no submit")
+        console.log("entrou no submit. CEP: ", cepValid.current)
         setIsLoading(true)
         getCoordinates().then(async (data) => {
             let newValues
-            if (data.location && data.finalAddress.length > 5 && perfilImage && galeria.length != 0 && imagemFundo && segmentos.length != 0 && categorias.length != 0 && subcategorias.length != 0 && ((cpfIsValid.current || cnpjIsValidRef.current) && !(cpfIsValid.current && cnpjIsValidRef.current)) && formaPagamento.length != 0 && horarioFuncionamento != 0 && descricaoLoja != 0) {
+            if (data.location && cepValid.current && 5 && perfilImage && galeria.length != 0 && imagemFundo && segmentos.length != 0 && categorias.length != 0 && subcategorias.length != 0 && ((cpfIsValid.current || cnpjIsValidRef.current) && !(cpfIsValid.current && cnpjIsValidRef.current)) && formaPagamento.length != 0 && horarioFuncionamento != 0 && descricaoLoja != 0) {
                 console.log("handle submit")
                 let dadosInteresse = { horarioFuncionamento, prazoProducao: prazoProducao + " " + prazoProducaoTipoRef.current, prazoEntrega: prazoEntrega + " " + prazoEntregaTipoRef.current, fazEntrega }
                 console.log("dados de interesse: ", dadosInteresse)
@@ -313,7 +316,10 @@ const CriarFornecedorFicticio = () => {
 
             errorMessageRef.current = "Escreva uma descrição para sua loja"
             setIsLoading(false)
-        } else {
+        }else if (!cepValid.current){
+            errorMessageRef.current = "CEP inválido"
+            setIsLoading(false)
+        }else {
 
             errorMessageRef.current = "nenhuma mensagem de erro"
             setIsLoading(false)

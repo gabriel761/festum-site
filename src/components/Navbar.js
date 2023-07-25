@@ -51,10 +51,13 @@ export default function Navbar() {
               <MDBNavbarLink active={location.pathname == "/criar-link"} href='/criar-link'>Criar Link</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
-              <MDBNavbarLink active={location.pathname == "/criar-link"} onClick={() => logoff()}>Logoff</MDBNavbarLink>
+              <MDBNavbarLink active={location.pathname == "/criar-fornecedor-ficticio"} href='/criar-fornecedor-ficticio'>Criar fonecedor fictício</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
-              <MDBNavbarLink active={location.pathname == "/criar-fornecedor-ficticio"} href='/criar-fornecedor-ficticio'>Criar fonecedor fictício</MDBNavbarLink>
+              <MDBNavbarLink active={location.pathname == "/form-precadastro-sempagamento"} href='/form-precadastro-sempagamento'>Pré Cadastro sem pagamento</MDBNavbarLink>
+            </MDBNavbarItem>
+            <MDBNavbarItem>
+              <MDBNavbarLink active={location.pathname == "/criar-link"} onClick={() => logoff()}>Logoff</MDBNavbarLink>
             </MDBNavbarItem>
           </MDBNavbarNav>
         </MDBCollapse>
