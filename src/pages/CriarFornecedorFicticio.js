@@ -11,7 +11,7 @@ import {
     MDBInputGroup,
     MDBBtn,
     MDBCheckbox,
-    MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem, MDBTextArea, MDBSpinner
+    MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem, MDBTextArea, MDBSpinner, MDBRadio, MDBCardTitle
 } from 'mdb-react-ui-kit';
 import ImageUploader from '../components/ImageUploader';
 import { Formik } from 'formik'
@@ -213,10 +213,8 @@ const CriarFornecedorFicticio = () => {
                 setCpfMessage("CPF inválido")
             }
         }
-
         setCpf(cpf)
     }
-
     const handleSubmit = (values) => {
         console.log("entrou no submit. CEP: ", cepValid.current)
         setIsLoading(true)
@@ -233,57 +231,44 @@ const CriarFornecedorFicticio = () => {
                     try {
                         const { message } = await efetuarCriarFornecedorFicticio(newValues)
                         errorMessageRef.current = message
-                        
+
                         setIsLoading(false)
-                        if(message.length == 0){
+                        if (message.length == 0) {
                             alert("Cadastro completado com sucesso!")
-                          
+
                         }
                     } catch (e) {
                         console.log(e)
                     }
-
                 } else {
                     postDataFromDatabase("/getCnpj", newValues.cnpj).then(async (result) => {
                         if (!result.data.error) {
                             try {
                                 const { message } = await efetuarCriarFornecedorFicticio(newValues)
                                 errorMessageRef.current = message
-                                
                                 setIsLoading(false)
-                                if(message.length == 0){
+                                if (message.length == 0) {
                                     alert("Cadastro completado com sucesso!")
-                                  
                                 }
                             } catch (e) {
                                 console.log(e)
                             }
-
-
-
-
                         } else {
-
                             errorMessageRef.current = result.data.message
                             setIsLoading(false)
                         }
-
                     }).catch((e) => {
-
                         console.log("erro checando cnpj: ", e)
                         setIsLoading(false)
                     })
                 }
             } else if (!data.location || data.finalAddress.length < 5) {
-
                 errorMessageRef.current = "Endereço inválido"
                 setIsLoading(false)
             } else if (segmentos.length == 0 || categorias.length == 0 || subcategorias.length == 0) {
-
                 errorMessageRef.current = "Escolha um segmento, categoria e subcategoria"
                 setIsLoading(false)
             } else if (!perfilImage) {
-
                 errorMessageRef.current = "Adicione uma imagem para seu perfil"
                 setIsLoading(false)
             } else if (!imagemFundo) {
@@ -295,388 +280,360 @@ const CriarFornecedorFicticio = () => {
             } else if (!cpfIsValid.current && !cnpjIsValidRef.current) {
                 console.log("cpf: ", cpfIsValid.current)
                 console.log("cnpj: ", cnpjIsValidRef.current)
-
                 errorMessageRef.current = "Escreva um CNPJ ou CPF válido"
                 setIsLoading(false)
-            }else if (cpfIsValid.current && cnpjIsValidRef.current) {
-            console.log("cpf: ", cpfIsValid.current)
-            console.log("cnpj: ", cnpjIsValidRef.current)
+            } else if (cpfIsValid.current && cnpjIsValidRef.current) {
+                console.log("cpf: ", cpfIsValid.current)
+                console.log("cnpj: ", cnpjIsValidRef.current)
+                errorMessageRef.current = "Você digitou o CNPJ e o CPF. Escolha apenas um deles para manter e apague o outro"
+                setIsLoading(false)
+            } else if (formaPagamento.length == 0) {
+                errorMessageRef.current = "adicione uma forma de pagamento";
+                setIsLoading(false)
+            } else if (horarioFuncionamento.length == 0) {
+                errorMessageRef.current = "Adicione um horario de funcionamento"
+                setIsLoading(false)
+            } else if (descricaoLoja.length == 0) {
+                errorMessageRef.current = "Escreva uma descrição para sua loja"
+                setIsLoading(false)
+            } else if (!cepValid.current) {
+                errorMessageRef.current = "CEP inválido"
+                setIsLoading(false)
+            } else {
+                errorMessageRef.current = "nenhuma mensagem de erro"
+                setIsLoading(false)
+            }
+        }).catch((e) => {
+            console.log(e)
+        })
 
-            errorMessageRef.current = "Você digitou o CNPJ e o CPF. Escolha apenas um deles para manter e apague o outro"
-            setIsLoading(false)
-        } else if (formaPagamento.length == 0) {
+    }
 
-            errorMessageRef.current = "adicione uma forma de pagamento";
-            setIsLoading(false)
-        } else if (horarioFuncionamento.length == 0) {
+    return (
 
-            errorMessageRef.current = "Adicione um horario de funcionamento"
-            setIsLoading(false)
-        } else if (descricaoLoja.length == 0) {
+        <MDBContainer className="px-5">
 
-            errorMessageRef.current = "Escreva uma descrição para sua loja"
-            setIsLoading(false)
-        }else if (!cepValid.current){
-            errorMessageRef.current = "CEP inválido"
-            setIsLoading(false)
-        }else {
+            <MDBRow className="gx-5">
+                <MDBCol>
+                    <MDBCard >
+                        <MDBCardBody>
+                            <MDBRow style={{ marginBottom: 40 }} className='g-5'>
+                                <MDBCol md='3'>
 
-            errorMessageRef.current = "nenhuma mensagem de erro"
-            setIsLoading(false)
-        }
+                                </MDBCol>
+                                <MDBCol className='col-md-6'>
+                                    <ImageUploader previewImage={perfilImage} setPreviewImage={setPerfilImage} />
+                                </MDBCol>
+                                <MDBCol md='3'>
 
-
-
-    }).catch ((e) => {
-        console.log(e)
-    })
-
-}
-
-return (
-
-    <MDBContainer className="px-5">
-
-        <MDBRow className="gx-5">
-            <MDBCol>
-                <MDBCard >
-                    <MDBCardBody>
-                        <MDBRow style={{ marginBottom: 40 }} className='g-5'>
-                            <MDBCol md='3'>
-
-                            </MDBCol>
-                            <MDBCol className='col-md-6'>
-                                <ImageUploader previewImage={perfilImage} setPreviewImage={setPerfilImage} />
-                            </MDBCol>
-                            <MDBCol md='3'>
-
-                            </MDBCol>
-                        </MDBRow>
-                        <Formik
-                            initialValues={{ nome: '', sobrenome: '', email: '', senha: '', senhaConfirmar: '', nomeLoja: '', numero: '', complemento: '', cnpj: '', tel: '', instagram: '', instagramLink: '', endereco: '', cidade: '', palavrasChave: '', categoria: '', subcategoria: '', segmento: '', preco: '' }}
-                            onSubmit={(values) => handleSubmit(values)}
-                            validationSchema={validationSchema}
-                        >
-                            {
-                                ({ handleChange, handleSubmit, handleBlur, touched, errors, values }) => (
-                                    <MDBContainer>
-                                        <MDBRow className='my-3'>
-                                            <MDBCol className='col-md-6'  >
-                                                <MDBInput
-                                                    value={values.nome}
-                                                    onChange={handleChange('nome')}
-                                                    required
-                                                    label='Nome'
-                                                    onBlur={handleBlur('nome')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.nome && errors.nome}</div>
-                                            </MDBCol>
-                                            <MDBCol className='col-md-6'  >
-                                                <MDBInput
-                                                    value={values.sobrenome}
-                                                    onChange={handleChange('sobrenome')}
-                                                    required
-                                                    label='Sobrenome'
-                                                    onBlur={handleBlur('sobrenome')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.sobrenome && errors.sobrenome}</div>
-                                            </MDBCol>
-                                        </MDBRow>
-                                        <MDBRow className='my-3'>
-                                            <MDBCol className='col-md-4'  >
-                                                <MDBInput
-                                                    value={values.email}
-                                                    onChange={handleChange('email')}
-                                                    required
-                                                    label='E-mail'
-                                                    onBlur={handleBlur('email')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.email && errors.email}</div>
-                                            </MDBCol>
-                                            <MDBCol className='col-md-4'  >
-                                                <MDBInput
-                                                    value={values.senha}
-                                                    onChange={handleChange('senha')}
-                                                    required
-                                                    type='password'
-                                                    label='Senha'
-                                                    onBlur={handleBlur('senha')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.senha && errors.senha}</div>
-                                            </MDBCol>
-                                            <MDBCol className='col-md-4'  >
-                                                <MDBInput
-                                                    value={values.senhaConfirmar}
-                                                    onChange={handleChange('senhaConfirmar')}
-                                                    required
-                                                    type='password'
-                                                    label='Confirmar senha'
-                                                    onBlur={handleBlur('senhaConfirmar')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.senhaConfirmar && errors.senhaConfirmar}</div>
-                                            </MDBCol>
-                                        </MDBRow>
-                                        <MDBRow className='my-3'>
-                                            <MDBCol feedback='Please choose a username.' md={6}>
-                                                <MDBInputGroup textBefore='@' >
-                                                    <input
-                                                        value={values.instagram}
-                                                        className='form-control'
-                                                        onChange={handleChange('instagram')}
+                                </MDBCol>
+                            </MDBRow>
+                            <Formik
+                                initialValues={{ nome: '', sobrenome: '', email: '', senha: '', senhaConfirmar: '', nomeLoja: '', numero: '', complemento: '', cnpj: '', tel: '', instagram: '', instagramLink: '', endereco: '', cidade: '', palavrasChave: '', categoria: '', subcategoria: '', segmento: '', preco: '' }}
+                                onSubmit={(values) => handleSubmit(values)}
+                                validationSchema={validationSchema}
+                            >
+                                {
+                                    ({ handleChange, handleSubmit, handleBlur, touched, errors, values }) => (
+                                        <MDBContainer>
+                                            <MDBRow className='my-3'>
+                                                <MDBCol className='col-md-6'  >
+                                                    <MDBInput
+                                                        value={values.nome}
+                                                        onChange={handleChange('nome')}
                                                         required
-                                                        placeholder='Instagram'
-                                                        onBlur={handleBlur('instagram')}
+                                                        label='Nome'
+                                                        onBlur={handleBlur('nome')}
                                                     />
-                                                </MDBInputGroup>
-                                                <div style={{ color: '#DC4C64' }}>{touched.instagram && errors.instagram}</div>
-                                            </MDBCol>
-                                            <MDBCol md={6}  >
-                                                <MDBInput
-                                                    value={values.instagramLink}
-                                                    onChange={handleChange('instagramLink')}
-                                                    required
-                                                    label='Instagram Link'
-                                                    onBlur={handleBlur('instagramLink')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.instagramLink && errors.instagramLink}</div>
-                                            </MDBCol>
-                                        </MDBRow>
-                                        <MDBRow className='my-3'>
-                                            <MDBCol className='col-md-3' feedback='Please provide a valid zip.' >
-                                                <MDBInput
-                                                    value={cep}
-                                                    onChange={(e) => onChangeCep(e.target.value)}
-                                                    required
-                                                    ref={cepRef}
-                                                    label='CEP'
-                                                    onBlur={() => onBlurCep()}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{cepMessage}</div>
-                                            </MDBCol>
-                                            <MDBCol className='col-md-1'  >
-                                                <MDBInput
-                                                    value={uf}
-                                                    onChange={handleChange('uf')}
-                                                    required
-                                                    label='UF'
-                                                    onBlur={handleBlur('uf')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.uf && errors.uf}</div>
-                                            </MDBCol>
-                                            <MDBCol className='col-md-4' feedback='Please provide a valid zip.' >
-                                                <MDBInput
-                                                    value={cidade}
-                                                    onChange={handleChange('cidade')}
-                                                    required
-                                                    label='Cidade'
-                                                    onBlur={handleBlur('cidade')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.cidade && errors.cidade}</div>
-                                            </MDBCol>
-                                            <MDBCol className='col-md-4'  >
-                                                <MDBInput
-                                                    value={bairro}
-                                                    onChange={handleChange('bairro')}
-                                                    required
-                                                    label='Bairro'
-                                                    onBlur={handleBlur('bairro')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.bairro && errors.bairro}</div>
-                                            </MDBCol>
-                                        </MDBRow>
-                                        <MDBRow className='my-3'>
-                                            <MDBCol className='col-md-6' feedback='Please provide a valid zip.' >
-                                                <MDBInput
-                                                    value={rua}
-                                                    onChange={handleChange('rua')}
-                                                    required
-                                                    label='Rua'
-                                                    onBlur={handleBlur('rua')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.rua && errors.rua}</div>
-                                            </MDBCol>
-                                            <MDBCol className='col-md-2'  >
-                                                <MDBInput
-                                                    value={values.numero}
-                                                    onChange={handleChange('numero')}
-                                                    required
-                                                    label='Numero'
-                                                    onBlur={handleBlur('numero')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.numero && errors.numero}</div>
-                                            </MDBCol>
-                                            <MDBCol className='col-md-4' feedback='Please provide a valid zip.' >
-                                                <MDBInput
-                                                    value={values.complemento}
-                                                    onChange={handleChange('complemento')}
-                                                    required
-                                                    label='Complemento'
-                                                    onBlur={handleBlur('complemento')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.complemento && errors.complemento}</div>
-                                            </MDBCol>
-                                        </MDBRow>
-                                        <MDBRow className='my-3'>
-                                            <MDBCol className='col-md-4'  >
-                                                <MDBInput
-                                                    value={values.tel}
-                                                    onChange={handleChange('tel')}
-                                                    required
-                                                    label='Tel'
-                                                    onBlur={handleBlur('tel')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.tel && errors.tel}</div>
-                                            </MDBCol>
-                                            <MDBCol className='col-md-3' feedback='Please provide a valid zip.' >
-                                                <MDBInput
-                                                    value={tipoTel}
-                                                    onChange={(e) => setTipoTel(e.target.value)}
-                                                    required
-                                                    label='TipoTel'
+                                                    <div style={{ color: '#DC4C64' }}>{touched.nome && errors.nome}</div>
+                                                </MDBCol>
+                                                <MDBCol className='col-md-6'  >
+                                                    <MDBInput
+                                                        value={values.sobrenome}
+                                                        onChange={handleChange('sobrenome')}
+                                                        required
+                                                        label='Sobrenome'
+                                                        onBlur={handleBlur('sobrenome')}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{touched.sobrenome && errors.sobrenome}</div>
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow className='my-3'>
+                                                <MDBCol className='col-md-4'  >
+                                                    <MDBInput
+                                                        value={values.email}
+                                                        onChange={handleChange('email')}
+                                                        required
+                                                        label='E-mail'
+                                                        onBlur={handleBlur('email')}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{touched.email && errors.email}</div>
+                                                </MDBCol>
+                                                <MDBCol feedback='Please choose a username.' md={4}>
+                                                    <MDBInputGroup textBefore='@' >
+                                                        <input
+                                                            value={values.instagram}
+                                                            className='form-control'
+                                                            onChange={handleChange('instagram')}
+                                                            required
+                                                            placeholder='Instagram'
+                                                            onBlur={handleBlur('instagram')}
+                                                        />
+                                                    </MDBInputGroup>
+                                                    <div style={{ color: '#DC4C64' }}>{touched.instagram && errors.instagram}</div>
+                                                </MDBCol>
+                                                <MDBCol md={4}  >
+                                                    <MDBInput
+                                                        value={values.instagramLink}
+                                                        onChange={handleChange('instagramLink')}
+                                                        required
+                                                        label='Instagram Link'
+                                                        onBlur={handleBlur('instagramLink')}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{touched.instagramLink && errors.instagramLink}</div>
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow className='my-3'>
+                                                <MDBCol className='col-md-3' feedback='Please provide a valid zip.' >
+                                                    <MDBInput
+                                                        value={cep}
+                                                        onChange={(e) => onChangeCep(e.target.value)}
+                                                        required
+                                                        ref={cepRef}
+                                                        label='CEP'
+                                                        onBlur={() => onBlurCep()}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{cepMessage}</div>
+                                                </MDBCol>
+                                                <MDBCol className='col-md-1'  >
+                                                    <MDBInput
+                                                        value={uf}
+                                                        onChange={handleChange('uf')}
+                                                        required
+                                                        label='UF'
+                                                        onBlur={handleBlur('uf')}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{touched.uf && errors.uf}</div>
+                                                </MDBCol>
+                                                <MDBCol className='col-md-4' feedback='Please provide a valid zip.' >
+                                                    <MDBInput
+                                                        value={cidade}
+                                                        onChange={handleChange('cidade')}
+                                                        required
+                                                        label='Cidade'
+                                                        onBlur={handleBlur('cidade')}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{touched.cidade && errors.cidade}</div>
+                                                </MDBCol>
+                                                <MDBCol className='col-md-4'  >
+                                                    <MDBInput
+                                                        value={bairro}
+                                                        onChange={handleChange('bairro')}
+                                                        required
+                                                        label='Bairro'
+                                                        onBlur={handleBlur('bairro')}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{touched.bairro && errors.bairro}</div>
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow className='my-3'>
+                                                <MDBCol className='col-md-6' feedback='Please provide a valid zip.' >
+                                                    <MDBInput
+                                                        value={rua}
+                                                        onChange={handleChange('rua')}
+                                                        required
+                                                        label='Rua'
+                                                        onBlur={handleBlur('rua')}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{touched.rua && errors.rua}</div>
+                                                </MDBCol>
+                                                <MDBCol className='col-md-2'  >
+                                                    <MDBInput
+                                                        value={values.numero}
+                                                        onChange={handleChange('numero')}
+                                                        required
+                                                        label='Numero'
+                                                        onBlur={handleBlur('numero')}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{touched.numero && errors.numero}</div>
+                                                </MDBCol>
+                                                <MDBCol className='col-md-4' feedback='Please provide a valid zip.' >
+                                                    <MDBInput
+                                                        value={values.complemento}
+                                                        onChange={handleChange('complemento')}
+                                                        required
+                                                        label='Complemento'
+                                                        onBlur={handleBlur('complemento')}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{touched.complemento && errors.complemento}</div>
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow className='my-3'>
+                                                <MDBCol className='col-md-4'  >
+                                                    <MDBInput
+                                                        value={values.tel}
+                                                        onChange={handleChange('tel')}
+                                                        required
+                                                        label='Tel'
+                                                        onBlur={handleBlur('tel')}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{touched.tel && errors.tel}</div>
+                                                </MDBCol>
+                                                <MDBCol className='col-md-3' feedback='Please provide a valid zip.' >
+                                                    <MDBInput
+                                                        value={tipoTel}
+                                                        onChange={(e) => setTipoTel(e.target.value)}
+                                                        required
+                                                        label='TipoTel'
 
-                                                />
+                                                    />
 
-                                            </MDBCol>
-                                            <MDBCol className='col-md-5'  >
-                                                <MDBInput
-                                                    value={values.nomeLoja}
-                                                    onChange={handleChange('nomeLoja')}
-                                                    required
-                                                    label='Nome Loja'
-                                                    onBlur={handleBlur('nomeLoja')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.nomeLoja && errors.nomeLoja}</div>
-                                            </MDBCol>
-                                        </MDBRow>
-                                        <MDBRow className='my-3'>
-                                            <MDBCol className='col-md-4' feedback='Please provide a valid zip.' >
-                                                <MDBInput
-                                                    value={cnpj}
-                                                    onChange={(e) => onChangeCnpj(e.target.value)}
-                                                    required
-                                                    label='CNPJ'
-                                                    ref={cnpjInputRef}
-                                                    onBlur={handleBlur('cnpj')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.cnpj && errors.cnpj}</div>
-                                            </MDBCol>
-                                            <MDBCol className='col-md-4'  >
-                                                <MDBInput
-                                                    value={cpf}
-                                                    onChange={(e) => maskCPF(e.target.value)}
-                                                    required
-                                                    label='CPF'
-                                                    onBlur={handleBlur('cpf')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{cpfMessage}</div>
-                                            </MDBCol>
-                                            <MDBCol className='col-md-4' feedback='Please provide a valid zip.' >
-                                                <MDBInput
-                                                    value={values.preco}
-                                                    onChange={handleChange('preco')}
-                                                    required
-                                                    label='Preco'
-                                                    onBlur={handleBlur('preco')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.preco && errors.preco}</div>
-                                            </MDBCol>
-                                        </MDBRow>
-                                        <MDBRow className='my-3'>
-                                            <MDBCol className='col-md-12' feedback='Please provide a valid zip.' >
-                                                <MDBInput
-                                                    value={values.palavrasChave}
-                                                    onChange={handleChange('palavrasChave')}
-                                                    required
-                                                    label='Palavras Chave'
-                                                    onBlur={handleBlur('palavrasChave')}
-                                                />
-                                                <div style={{ color: '#DC4C64' }}>{touched.palavrasChave && errors.palavrasChave}</div>
-                                            </MDBCol>
-                                        </MDBRow>
-                                        <MDBRow className='my-3'>
-                                            <MDBCol className='col-md-4 d-grid gap-2' feedback='Please provide a valid zip.' >
-                                                <MDBDropdown className="d-grid gap-2 d-md-flex justify-content-md-center" color='secondary'>
-                                                    <MDBDropdownToggle style={{ maxHeight: 40 }}>Segmento</MDBDropdownToggle>
-                                                    <DropdownCadastro data={segmentosData} escolhidos={segmentos} setEscolhidos={setSegmentos} />
-                                                </MDBDropdown>
-                                                <ListaCategoriasEscolhidas data={segmentos} setData={setSegmentos} />
-                                            </MDBCol>
-                                            <MDBCol className='col-md-4 d-grid gap-2 ' feedback='Please provide a valid zip.' >
-                                                <MDBDropdown className="d-grid gap-2 d-md-flex justify-content-md-center" color='secondary'>
-                                                    <MDBDropdownToggle style={{ maxHeight: 40 }}>Categoria</MDBDropdownToggle>
-                                                    <DropdownCadastro getSubcategorias={getSubcategorias} data={categoriasData} escolhidos={categorias} setEscolhidos={setCategorias} />
-                                                </MDBDropdown>
-                                                <div style={{ color: '#DC4C64' }}>{touched.categoria && errors.categoria}</div>
-                                                <ListaCategoriasEscolhidas data={categorias} setData={setCategorias} />
-                                            </MDBCol>
-                                            <MDBCol className='col-md-4 d-grid gap-2' feedback='Please provide a valid zip.' >
-                                                <MDBDropdown className="d-grid gap-2 d-md-flex justify-content-md-center" color='secondary'>
-                                                    <MDBDropdownToggle style={{ maxHeight: 40 }}>subcategoria</MDBDropdownToggle>
-                                                    <DropdownCadastro data={subcategoriasData} escolhidos={subcategorias} setEscolhidos={setSubcategorias} />
-                                                </MDBDropdown>
-                                                <ListaCategoriasEscolhidas data={subcategorias} setData={setSubcategorias} />
-                                            </MDBCol>
-                                        </MDBRow>
-                                        <MDBRow className='my-3'>
-                                            <MDBCol className='col-md-12'  >
-                                                <UploadGaleria galeria={galeria} setGaleria={setGaleria} />
-                                            </MDBCol>
-                                        </MDBRow>
-                                        <MDBRow>
-                                            <MDBCol className='col-md-12'  >
-                                                <ImageUploaderFundo previewImage={imagemFundo} setPreviewImage={setImagemFundo} />
-                                            </MDBCol>
-                                        </MDBRow>
-                                        <MDBRow className='my-3'>
-                                            <MDBCol className='col-md-12 d-grid gap-2' feedback='Please provide a valid zip.' >
-                                                <MDBDropdown className="d-grid gap-2 d-md-flex justify-content-md-center" color='secondary'>
-                                                    <MDBDropdownToggle style={{ maxHeight: 40 }}>Formas de Pagamento</MDBDropdownToggle>
-                                                    <DropdownCadastro data={formasDePagamentoData} escolhidos={formaPagamento} setEscolhidos={setFormaPagamento} />
-                                                </MDBDropdown>
-                                                <ListaCategoriasEscolhidas data={formaPagamento} setData={setFormaPagamento} />
-                                            </MDBCol>
-                                        </MDBRow>
-                                        <MDBRow className='my-3'>
-                                            <MDBCol className='col-md-6'  >
-                                                <MDBTextArea value={horarioFuncionamento} onChange={(e) => setHorarioFuncionamento(e.target.value)} rows={6} label='Horário de funcionamento' />
-                                            </MDBCol>
-                                            <MDBCol className='col-md-6'  >
-                                                <MDBTextArea value={descricaoLoja} onChange={(e) => setDescricaoLoja(e.target.value)} rows={6} label='Descrição da Loja' />
-                                            </MDBCol>
-                                        </MDBRow>
-                                        <MDBRow className='my-3'>
-                                            <MDBCol className='col-md-6'  >
-                                                <MDBInput value={prazoProducao} onChange={(e) => setPrazoProducao(e.target.value)} label='Prazo de produção' />
-                                            </MDBCol>
-                                            <MDBCol className='col-md-6'  >
-                                                <MDBInput value={prazoEntrega} onChange={(e) => setPrazoEntrega(e.target.value)} label='Prazo de entrega' />
-                                            </MDBCol>
-                                        </MDBRow>
-                                        <MDBRow>
-                                            {!isLoading ?
-                                                <div className='col-md-12'>
-                                                    <div style={{ color: '#DC4C64' }}>{errorMessageRef.current}</div>
-                                                    <MDBBtn type='submit' style={{ marginRight: 20 }} onClick={handleSubmit}>Cadastrar Fornecedor</MDBBtn>
-                                                </div>
-                                                :
-                                                <div className='col-md-12'>
-                                                    <MDBSpinner role='status'>
-                                                        <span className='visually-hidden'>Loading...</span>
-                                                    </MDBSpinner>
-                                                </div>
-                                            }
+                                                </MDBCol>
+                                                <MDBCol className='col-md-5'  >
+                                                    <MDBInput
+                                                        value={values.nomeLoja}
+                                                        onChange={handleChange('nomeLoja')}
+                                                        required
+                                                        label='Nome Loja'
+                                                        onBlur={handleBlur('nomeLoja')}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{touched.nomeLoja && errors.nomeLoja}</div>
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow className='my-3'>
+                                                <MDBCol className='col-md-4' feedback='Please provide a valid zip.' >
+                                                    <MDBInput
+                                                        value={cnpj}
+                                                        onChange={(e) => onChangeCnpj(e.target.value)}
+                                                        required
+                                                        label='CNPJ'
+                                                        ref={cnpjInputRef}
+                                                        onBlur={handleBlur('cnpj')}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{touched.cnpj && errors.cnpj}</div>
+                                                </MDBCol>
+                                                <MDBCol className='col-md-4'  >
+                                                    <MDBInput
+                                                        value={cpf}
+                                                        onChange={(e) => maskCPF(e.target.value)}
+                                                        required
+                                                        label='CPF'
+                                                        onBlur={handleBlur('cpf')}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{cpfMessage}</div>
+                                                </MDBCol>
+                                                <MDBCol className='col-md-4' feedback='Please provide a valid zip.' >
+                                                    <MDBInput
+                                                        value={values.preco}
+                                                        onChange={handleChange('preco')}
+                                                        required
+                                                        label='Preco'
+                                                        onBlur={handleBlur('preco')}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{touched.preco && errors.preco}</div>
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow className='my-3'>
+                                                <MDBCol className='col-md-12' feedback='Please provide a valid zip.' >
+                                                    <MDBInput
+                                                        value={values.palavrasChave}
+                                                        onChange={handleChange('palavrasChave')}
+                                                        required
+                                                        label='Palavras Chave'
+                                                        onBlur={handleBlur('palavrasChave')}
+                                                    />
+                                                    <div style={{ color: '#DC4C64' }}>{touched.palavrasChave && errors.palavrasChave}</div>
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow className='my-3'>
+                                                <MDBCol className='col-md-4 d-grid gap-2' feedback='Please provide a valid zip.' >
+                                                    <MDBDropdown className="d-grid gap-2 d-md-flex justify-content-md-center" color='secondary'>
+                                                        <MDBDropdownToggle style={{ maxHeight: 40 }}>Segmento</MDBDropdownToggle>
+                                                        <DropdownCadastro data={segmentosData} escolhidos={segmentos} setEscolhidos={setSegmentos} />
+                                                    </MDBDropdown>
+                                                    <ListaCategoriasEscolhidas data={segmentos} setData={setSegmentos} />
+                                                </MDBCol>
+                                                <MDBCol className='col-md-4 d-grid gap-2 ' feedback='Please provide a valid zip.' >
+                                                    <MDBDropdown className="d-grid gap-2 d-md-flex justify-content-md-center" color='secondary'>
+                                                        <MDBDropdownToggle style={{ maxHeight: 40 }}>Categoria</MDBDropdownToggle>
+                                                        <DropdownCadastro getSubcategorias={getSubcategorias} data={categoriasData} escolhidos={categorias} setEscolhidos={setCategorias} />
+                                                    </MDBDropdown>
+                                                    <div style={{ color: '#DC4C64' }}>{touched.categoria && errors.categoria}</div>
+                                                    <ListaCategoriasEscolhidas data={categorias} setData={setCategorias} />
+                                                </MDBCol>
+                                                <MDBCol className='col-md-4 d-grid gap-2' feedback='Please provide a valid zip.' >
+                                                    <MDBDropdown className="d-grid gap-2 d-md-flex justify-content-md-center" color='secondary'>
+                                                        <MDBDropdownToggle style={{ maxHeight: 40 }}>subcategoria</MDBDropdownToggle>
+                                                        <DropdownCadastro data={subcategoriasData} escolhidos={subcategorias} setEscolhidos={setSubcategorias} />
+                                                    </MDBDropdown>
+                                                    <ListaCategoriasEscolhidas data={subcategorias} setData={setSubcategorias} />
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow className='my-3'>
+                                                <MDBCol className='col-md-12'  >
+                                                    <UploadGaleria galeria={galeria} setGaleria={setGaleria} />
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow>
+                                                <MDBCol className='col-md-12'  >
+                                                    <ImageUploaderFundo previewImage={imagemFundo} setPreviewImage={setImagemFundo} />
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow className='my-3'>
+                                                <MDBCol className='col-md-12 d-grid gap-2' feedback='Please provide a valid zip.' >
+                                                    <MDBDropdown className="d-grid gap-2 d-md-flex justify-content-md-center" color='secondary'>
+                                                        <MDBDropdownToggle style={{ maxHeight: 40 }}>Formas de Pagamento</MDBDropdownToggle>
+                                                        <DropdownCadastro data={formasDePagamentoData} escolhidos={formaPagamento} setEscolhidos={setFormaPagamento} />
+                                                    </MDBDropdown>
+                                                    <ListaCategoriasEscolhidas data={formaPagamento} setData={setFormaPagamento} />
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow className='my-3'>
+                                                <MDBCol className='col-md-6'  >
+                                                    <MDBTextArea value={descricaoLoja} onChange={(e) => setDescricaoLoja(e.target.value)} rows={7} label='Descrição da Loja' />
+                                                </MDBCol>
+                                                <MDBCol className='col-md-6'  >
+                                                    <MDBTextArea value={horarioFuncionamento} onChange={(e) => setHorarioFuncionamento(e.target.value)} rows={4} label='Horário de funcionamento' />
+                                                    <div className='mx-2 mt-3'>
+                                                        <MDBCardTitle>Faz Entrega?</MDBCardTitle>
+                                                        <MDBRadio name='inlineRadio' id='inlineRadio1' onChange={(e) => setFazEntrega(e.target.value)} value='Sim' label='Sim' inline  />
+                                                        <MDBRadio name='inlineRadio' id='inlineRadio2' onChange={(e) => setFazEntrega(e.target.value)} value='Não' label='Não' inline  defaultChecked/>
+                                                    </div>
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow className='my-3'>
+                                                <MDBCol className='col-md-6'  >
+                                                    <MDBInput value={prazoProducao} onChange={(e) => setPrazoProducao(e.target.value)} label='Prazo de produção' />
+                                                </MDBCol>
+                                                <MDBCol className='col-md-6'  >
+                                                    {fazEntrega == 'Sim' && <MDBInput value={prazoEntrega} onChange={(e) => setPrazoEntrega(e.target.value)} label='Prazo de entrega' />}
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow>
+                                                {!isLoading ?
+                                                    <div className='col-md-12'>
+                                                        <div style={{ color: '#DC4C64' }}>{errorMessageRef.current}</div>
+                                                        <MDBBtn type='submit' style={{ marginRight: 20 }} onClick={handleSubmit}>Cadastrar Fornecedor</MDBBtn>
+                                                    </div>
+                                                    :
+                                                    <div className='col-md-12'>
+                                                        <MDBSpinner role='status'>
+                                                            <span className='visually-hidden'>Loading...</span>
+                                                        </MDBSpinner>
+                                                    </div>
+                                                }
 
-                                        </MDBRow>
-                                    </MDBContainer>
-                                )}
-                        </Formik>
-                    </MDBCardBody>
-                </MDBCard>
-            </MDBCol>
-        </MDBRow>
-    </MDBContainer>
+                                            </MDBRow>
+                                        </MDBContainer>
+                                    )}
+                            </Formik>
+                        </MDBCardBody>
+                    </MDBCard>
+                </MDBCol>
+            </MDBRow>
+        </MDBContainer>
 
-);
+    );
 }
 
 export default CriarFornecedorFicticio;

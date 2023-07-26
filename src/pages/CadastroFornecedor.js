@@ -68,6 +68,7 @@ const CadastroFornecedor = () => {
     const [galeria, setGaleria] = useState([])
 
     const cepRef = useRef(null)
+    const cepValid = useRef(false)
     const cnpjInputRef = useRef(null)
     const cnpjRef = useRef(null)
     const cnpjIsValidRef = useRef(false)
@@ -120,6 +121,7 @@ const CadastroFornecedor = () => {
     }, [])
 
     const onChangeCep = (value) => {
+        cepValid.current = false
         setCep(value)
         setCepMessage('')
         value = value.replace('-', '')
@@ -134,12 +136,14 @@ const CadastroFornecedor = () => {
                     setBairro(data.bairro)
                     setRua(data.logradouro)
                     setCepMessage('')
+                    cepValid.current = true
                 } else {
                     setUf('')
                     setCidade('')
                     setBairro('')
                     setRua('')
                     setCepMessage('CEP inválido')
+                    cepValid.current = false
                 }
             })).catch((e) => {
                 console.log("erro do viacep: ", e)
@@ -166,6 +170,7 @@ const CadastroFornecedor = () => {
     }
 
     const onChangeCnpj = value => {
+        cnpjIsValidRef.current = false
         var x = value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2})/);
         value = !x[2] ? x[1] : x[1] + '.' + x[2] + '.' + x[3] + '/' + x[4] + (x[5] ? '-' + x[5] : '');
         setCnpj(value)
@@ -187,6 +192,7 @@ const CadastroFornecedor = () => {
     }
 
     function maskCPF(cpf) {
+        cpfIsValid.current = false
         cpf = cpf.replace(/\D/g, "")
         cpf = cpf.replace(/(\d{3})(\d)/, "$1.$2")
         cpf = cpf.replace(/(\d{3})(\d)/, "$1.$2")
@@ -209,11 +215,11 @@ const CadastroFornecedor = () => {
     }
 
     const handleSubmit = (values) => {
-        console.log("entrou no submit")
+        console.log("entrou no submit. CEP: ", cepValid.current)
         setIsLoading(true)
         getCoordinates().then(async(data) => {
             let newValues
-            if (data.location && data.finalAddress.length > 5 && perfilImage && segmentos.length != 0 && categorias.length != 0 && subcategorias.length != 0 && ((cpfIsValid.current || cnpjIsValidRef.current) && !(cpfIsValid.current && cnpjIsValidRef.current)) && formaPagamento.length != 0 && horarioFuncionamento != 0 && descricaoLoja != 0) {
+            if (data.location && cepValid.current && 5 && perfilImage && galeria.length != 0 && imagemFundo && segmentos.length != 0 && categorias.length != 0 && subcategorias.length != 0 && ((cpfIsValid.current || cnpjIsValidRef.current) && !(cpfIsValid.current && cnpjIsValidRef.current)) && formaPagamento.length != 0 && horarioFuncionamento != 0 && descricaoLoja != 0) {
                 console.log("handle submit")
                 let dadosInteresse = { horarioFuncionamento, prazoProducao: prazoProducao + " " + prazoProducaoTipoRef.current, prazoEntrega: prazoEntrega + " " + prazoEntregaTipoRef.current, fazEntrega }
                 console.log("dados de interesse: ", dadosInteresse)
@@ -249,38 +255,44 @@ const CadastroFornecedor = () => {
                     })
                 }
             } else if (!data.location || data.finalAddress.length < 5) {
-                
-               errorMessageRef.current = "Endereço inválido"
+                errorMessageRef.current = "Endereço inválido"
                 setIsLoading(false)
             } else if (segmentos.length == 0 || categorias.length == 0 || subcategorias.length == 0) {
-                
-               errorMessageRef.current = "Escolha um segmento, categoria e subcategoria"
+                errorMessageRef.current = "Escolha um segmento, categoria e subcategoria"
                 setIsLoading(false)
             } else if (!perfilImage) {
-                
-               errorMessageRef.current = "Adicione uma imagem para seu perfil"
+                errorMessageRef.current = "Adicione uma imagem para seu perfil"
+                setIsLoading(false)
+            } else if (!imagemFundo) {
+                errorMessageRef.current = "Adicione uma imagem de fundo"
+                setIsLoading(false)
+            } else if (galeria.length == 0) {
+                errorMessageRef.current = "Adicione uma ou mais imagens à sua galeria"
                 setIsLoading(false)
             } else if (!cpfIsValid.current && !cnpjIsValidRef.current) {
                 console.log("cpf: ", cpfIsValid.current)
                 console.log("cnpj: ", cnpjIsValidRef.current)
-                
-               errorMessageRef.current = "Escreva um CNPJ ou CPF válido"
+                errorMessageRef.current = "Escreva um CNPJ ou CPF válido"
+                setIsLoading(false)
+            } else if (cpfIsValid.current && cnpjIsValidRef.current) {
+                console.log("cpf: ", cpfIsValid.current)
+                console.log("cnpj: ", cnpjIsValidRef.current)
+                errorMessageRef.current = "Você digitou o CNPJ e o CPF. Escolha apenas um deles para manter e apague o outro"
                 setIsLoading(false)
             } else if (formaPagamento.length == 0) {
-                
-               errorMessageRef.current = "adicione uma forma de pagamento";
+                errorMessageRef.current = "adicione uma forma de pagamento";
                 setIsLoading(false)
             } else if (horarioFuncionamento.length == 0) {
-                
-               errorMessageRef.current = "Adicione um horario de funcionamento"
+                errorMessageRef.current = "Adicione um horario de funcionamento"
                 setIsLoading(false)
             } else if (descricaoLoja.length == 0) {
-                
-               errorMessageRef.current = "Escreva uma descrição para sua loja"
+                errorMessageRef.current = "Escreva uma descrição para sua loja"
+                setIsLoading(false)
+            } else if (!cepValid.current) {
+                errorMessageRef.current = "CEP inválido"
                 setIsLoading(false)
             } else {
-                
-               errorMessageRef.current = "nenhuma mensagem de erro"
+                errorMessageRef.current = "nenhuma mensagem de erro"
                 setIsLoading(false)
             }
 

@@ -28,13 +28,11 @@ export const efetuarCriarFornecedorFicticio = async (values) => {
     console.log("enviando dados ao back-end...")
     console.log("imagem fundo: ", newValues)
     newValues = await sendToBackEnd(newValues)
-      await auth.createUserWithEmailAndPassword(values.email, values.senha)
-    let currentUser = auth.currentUser
-    console.log("current user cadastro cliente: ", currentUser)
-    await updateFirebaseId(currentUser.uid, currentUser.email)
-    auth.signOut()
-    
-
+    //   await auth.createUserWithEmailAndPassword(values.email, values.senha)
+    // let currentUser = auth.currentUser
+    // console.log("current user cadastro cliente: ", currentUser)
+    // await updateFirebaseId(currentUser.uid, currentUser.email)
+    // auth.signOut()
     return { message, isLoading }
   } catch (e) {
     console.log(e)
