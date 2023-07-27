@@ -21,6 +21,7 @@ import FormPreCadastroFirebase from './pages/FormePreCadastroFirebase';
 import DeepLinking from './pages/DeepLiking';
 import CriarFornecedorFicticio from './pages/CriarFornecedorFicticio';
 import PreCadastroFormSemPagamento from './pages/PreCadastroSemPagamento';
+import CriarFornecedorNebulosa from './pages/CriarFornecedorNebulosa';
 
 
 
@@ -66,6 +67,7 @@ function App() {
             <Route path='/deeplinking' element={<DeepLinking />} />
             <Route path='/criar-fornecedor-ficticio' element={<Private setSigned={setSigned} signed={signed} Item={CriarFornecedorFicticio} />} />
             <Route path='/form-precadastro-sempagamento' element={<PreCadastroFormSemPagamento/>} />
+            <Route path='/form-pacote-nebulosa' element={<CriarFornecedorNebulosa/>} />
           </Routes>
         </Router>
       </UserContext.Provider>

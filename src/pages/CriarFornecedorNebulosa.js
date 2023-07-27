@@ -25,11 +25,13 @@ import ImageUploaderFundo from '../components/ImageUploaderFundo';
 import { efetuarCadastroFornecedor } from '../functions/efetuarCadastroFornecedor';
 import { formasDePagamentoData } from '../objects/formasDePagamento';
 import { redirect, useLocation, useNavigate } from 'react-router-dom';
+import { efetuarCriarFornecedorFicticio } from '../functions/efetuarCriarFornecedorFicticio';
+import { efetuarCadastroNebulosa } from '../functions/efetuarCadastroNebulosa';
 
 
 
 
-const CadastroFornecedor = () => {
+const CriarFornecedorNebulosa = () => {
 
 
 
@@ -78,11 +80,11 @@ const CadastroFornecedor = () => {
     const errorMessageRef = useRef('')
 
     let { state } = useLocation();
-    const { fornecedor } = state
 
-    console.log("use location: ", state)
 
     const yupObject = {
+
+        email: yup.string().required("Campo obrigatório").email("E-mail inválido"),
         nomeLoja: yup.string().required("Campo obrigatório").min(2),
         cep: yup.string(),
         uf: yup.string(),
@@ -90,14 +92,11 @@ const CadastroFornecedor = () => {
         bairro: yup.string(),
         rua: yup.string(),
         numero: yup.number("Apenas numeros"),
-        palavrasChave: yup.string().required("Campo obrigatório"),
         categoria: yup.string(),
         subcategoria: yup.string(),
         segmento: yup.string(),
         preco: yup.string().required("Campo obrigatório"),
-        tel: yup.string().required("Campo obrigatório"),
-        instagram: yup.string(),
-        instagramLink: yup.string(),
+        tel: yup.string(),
     }
     const validationSchema = yup.object(yupObject)
 
@@ -177,7 +176,6 @@ const CadastroFornecedor = () => {
 
         if (value.length == 18) {
             cnpjIsValidRef.current = validarCNPJ(value)
-
         } else {
             cnpjIsValidRef.current = false
         }
@@ -210,60 +208,56 @@ const CadastroFornecedor = () => {
                 setCpfMessage("CPF inválido")
             }
         }
-
         setCpf(cpf)
     }
-
     const handleSubmit = (values) => {
         console.log("entrou no submit. CEP: ", cepValid.current)
         setIsLoading(true)
         getCoordinates().then(async (data) => {
             let newValues
-            if (data.location && cepValid.current && 5 && perfilImage && galeria.length != 0 && imagemFundo && segmentos.length != 0 && categorias.length != 0 && subcategorias.length != 0 && ((cpfIsValid.current || cnpjIsValidRef.current) && !(cpfIsValid.current && cnpjIsValidRef.current)) && formaPagamento.length != 0 && horarioFuncionamento != 0 && descricaoLoja != 0) {
+            if (data.location && cepValid.current && 5 && perfilImage && galeria.length != 0 && imagemFundo && segmentos.length != 0 && categorias.length != 0 && subcategorias.length != 0 && ((cpfIsValid.current || cnpjIsValidRef.current) && !(cpfIsValid.current && cnpjIsValidRef.current))) {
                 console.log("handle submit")
                 let dadosInteresse = { horarioFuncionamento, prazoProducao: prazoProducao + " " + prazoProducaoTipoRef.current, prazoEntrega: prazoEntrega + " " + prazoEntregaTipoRef.current, fazEntrega }
                 console.log("dados de interesse: ", dadosInteresse)
-                newValues = { ...values, nome: fornecedor.nome, sobrenome: fornecedor.sobrenome, email: fornecedor.email, id: fornecedor.pk_id, localizacao: JSON.stringify(data.location), endereco: data.finalAddress, cidade, segmentos: segmentos, categorias: categorias, subcategorias: subcategorias, cnpj: cnpjRef.current, tipoTel: tipoTel, imagem: perfilImage, cep, galeria, imagemFundo, formaPagamento: JSON.stringify(formaPagamento), descricaoLoja, dadosInteresse: JSON.stringify(dadosInteresse), statusConta: "ativo" }
+                newValues = { ...values, localizacao: JSON.stringify(data.location), endereco: data.finalAddress, cidade, segmentos: segmentos, categorias: categorias, subcategorias: subcategorias, cnpj: cnpjRef.current, tipoTel: tipoTel, imagem: perfilImage, cep, galeria, imagemFundo, formaPagamento: JSON.stringify(formaPagamento), descricaoLoja, dadosInteresse: JSON.stringify(dadosInteresse),statusPagamento: "conta gratuita", statusConta: "conta gratuita", plano: "Pacote Nebulosa" }
                 if (cpf) {
+                    newValues.cnpj = null;
+                    newValues = { ...newValues, cpf: cpf }
                     try {
-                        newValues.cnpj = null;
-                        newValues = { ...newValues, cpf: cpf }
-                        await efetuarCadastroFornecedor(newValues)
+                        const { message } = await efetuarCadastroNebulosa(newValues)
+                        errorMessageRef.current = message
 
-                        errorMessageRef.current = ''
                         setIsLoading(false)
-                        alert("Cadastro completado com sucesso!")
-                        navigate("/lista-precadastro")
+                        if (message.length == 0) {
+                            alert("Cadastro completado com sucesso!")
+
+                        }
                     } catch (e) {
                         errorMessageRef.current = e.message
                         setIsLoading(false)
                         console.log(e)
-                    }
 
+                    }
                 } else {
                     postDataFromDatabase("/getCnpj", newValues.cnpj).then(async (result) => {
                         if (!result.data.error) {
                             try {
-                                await efetuarCadastroFornecedor(newValues)
-
-                                errorMessageRef.current = ''
+                                const { message } = await efetuarCadastroNebulosa(newValues)
+                                errorMessageRef.current = message
                                 setIsLoading(false)
-                                alert("Cadastro completado com sucesso!")
-                                navigate("/lista-precadastro")
+                                if (message.length == 0) {
+                                    alert("Cadastro completado com sucesso!")
+                                }
                             } catch (e) {
                                 errorMessageRef.current = e.message
                                 setIsLoading(false)
                                 console.log(e)
                             }
-
                         } else {
-
                             errorMessageRef.current = result.data.message
                             setIsLoading(false)
                         }
-
                     }).catch((e) => {
-
                         console.log("erro checando cnpj: ", e)
                         setIsLoading(false)
                     })
@@ -293,15 +287,6 @@ const CadastroFornecedor = () => {
                 console.log("cnpj: ", cnpjIsValidRef.current)
                 errorMessageRef.current = "Você digitou o CNPJ e o CPF. Escolha apenas um deles para manter e apague o outro"
                 setIsLoading(false)
-            } else if (formaPagamento.length == 0) {
-                errorMessageRef.current = "adicione uma forma de pagamento";
-                setIsLoading(false)
-            } else if (horarioFuncionamento.length == 0) {
-                errorMessageRef.current = "Adicione um horario de funcionamento"
-                setIsLoading(false)
-            } else if (descricaoLoja.length == 0) {
-                errorMessageRef.current = "Escreva uma descrição para sua loja"
-                setIsLoading(false)
             } else if (!cepValid.current) {
                 errorMessageRef.current = "CEP inválido"
                 setIsLoading(false)
@@ -309,9 +294,6 @@ const CadastroFornecedor = () => {
                 errorMessageRef.current = "nenhuma mensagem de erro"
                 setIsLoading(false)
             }
-
-
-
         }).catch((e) => {
             console.log(e)
         })
@@ -338,36 +320,24 @@ const CadastroFornecedor = () => {
                                 </MDBCol>
                             </MDBRow>
                             <Formik
-                                initialValues={{ nomeLoja: '', numero: '', complemento: '', cnpj: '', tel: '', instagram: '', instagramLink: '', endereco: '', cidade: '', palavrasChave: '', categoria: '', subcategoria: '', segmento: '', preco: '' }}
+                                initialValues={{ nome: '', sobrenome: '', email: '', senha: '', senhaConfirmar: '', nomeLoja: '', numero: '', complemento: '', cnpj: '', tel: '', instagram: '', instagramLink: '', endereco: '', cidade: '', palavrasChave: '', categoria: '', subcategoria: '', segmento: '', preco: '' }}
                                 onSubmit={(values) => handleSubmit(values)}
                                 validationSchema={validationSchema}
                             >
                                 {
                                     ({ handleChange, handleSubmit, handleBlur, touched, errors, values }) => (
                                         <MDBContainer>
+
                                             <MDBRow className='my-3'>
-                                                <MDBCol feedback='Please choose a username.' md={6}>
-                                                    <MDBInputGroup textBefore='@' >
-                                                        <input
-                                                            value={values.instagram}
-                                                            className='form-control'
-                                                            onChange={handleChange('instagram')}
-                                                            required
-                                                            placeholder='Instagram'
-                                                            onBlur={handleBlur('instagram')}
-                                                        />
-                                                    </MDBInputGroup>
-                                                    <div style={{ color: '#DC4C64' }}>{touched.instagram && errors.instagram}</div>
-                                                </MDBCol>
-                                                <MDBCol md={6}  >
+                                                <MDBCol className='col-md-12'  >
                                                     <MDBInput
-                                                        value={values.instagramLink}
-                                                        onChange={handleChange('instagramLink')}
+                                                        value={values.email}
+                                                        onChange={handleChange('email')}
                                                         required
-                                                        label='Instagram Link'
-                                                        onBlur={handleBlur('instagramLink')}
+                                                        label='E-mail'
+                                                        onBlur={handleBlur('email')}
                                                     />
-                                                    <div style={{ color: '#DC4C64' }}>{touched.instagramLink && errors.instagramLink}</div>
+                                                    <div style={{ color: '#DC4C64' }}>{touched.email && errors.email}</div>
                                                 </MDBCol>
                                             </MDBRow>
                                             <MDBRow className='my-3'>
@@ -511,18 +481,6 @@ const CadastroFornecedor = () => {
                                                 </MDBCol>
                                             </MDBRow>
                                             <MDBRow className='my-3'>
-                                                <MDBCol className='col-md-12' feedback='Please provide a valid zip.' >
-                                                    <MDBInput
-                                                        value={values.palavrasChave}
-                                                        onChange={handleChange('palavrasChave')}
-                                                        required
-                                                        label='Palavras Chave'
-                                                        onBlur={handleBlur('palavrasChave')}
-                                                    />
-                                                    <div style={{ color: '#DC4C64' }}>{touched.palavrasChave && errors.palavrasChave}</div>
-                                                </MDBCol>
-                                            </MDBRow>
-                                            <MDBRow className='my-3'>
                                                 <MDBCol className='col-md-4 d-grid gap-2' feedback='Please provide a valid zip.' >
                                                     <MDBDropdown className="d-grid gap-2 d-md-flex justify-content-md-center" color='secondary'>
                                                         <MDBDropdownToggle style={{ maxHeight: 40 }}>Segmento</MDBDropdownToggle>
@@ -556,37 +514,7 @@ const CadastroFornecedor = () => {
                                                     <ImageUploaderFundo previewImage={imagemFundo} setPreviewImage={setImagemFundo} />
                                                 </MDBCol>
                                             </MDBRow>
-                                            <MDBRow className='my-3'>
-                                                <MDBCol className='col-md-12 d-grid gap-2' feedback='Please provide a valid zip.' >
-                                                    <MDBDropdown className="d-grid gap-2 d-md-flex justify-content-md-center" color='secondary'>
-                                                        <MDBDropdownToggle style={{ maxHeight: 40 }}>Formas de Pagamento</MDBDropdownToggle>
-                                                        <DropdownCadastro data={formasDePagamentoData} escolhidos={formaPagamento} setEscolhidos={setFormaPagamento} />
-                                                    </MDBDropdown>
-                                                    <ListaCategoriasEscolhidas data={formaPagamento} setData={setFormaPagamento} />
-                                                </MDBCol>
-                                            </MDBRow>
-                                            <MDBRow className='my-3'>
-                                                <MDBCol className='col-md-6'  >
-                                                    <MDBTextArea value={descricaoLoja} onChange={(e) => setDescricaoLoja(e.target.value)} rows={7} label='Descrição da Loja' />
-                                                </MDBCol>
-                                                <MDBCol className='col-md-6'  >
-                                                    <MDBTextArea value={horarioFuncionamento} onChange={(e) => setHorarioFuncionamento(e.target.value)} rows={4} label='Horário de funcionamento' />
-                                                    <div className='mx-2 mt-3'>
-                                                        <MDBCardTitle>Faz Entrega?</MDBCardTitle>
-                                                        <MDBRadio name='inlineRadio' id='inlineRadio1' onChange={(e) => setFazEntrega(e.target.value)} value='Sim' label='Sim' inline />
-                                                        <MDBRadio name='inlineRadio' id='inlineRadio2' onChange={(e) => setFazEntrega(e.target.value)} value='Não' label='Não' inline defaultChecked />
-                                                    </div>
-                                                </MDBCol>
-                                            </MDBRow>
-                                            <MDBRow className='my-3'>
-                                                <MDBCol className='col-md-6'  >
-                                                    <MDBInput value={prazoProducao} onChange={(e) => setPrazoProducao(e.target.value)} label='Prazo de produção' />
-                                                </MDBCol>
-                                                <MDBCol className='col-md-6'  >
-                                                    {fazEntrega == 'Sim' && <MDBInput value={prazoEntrega} onChange={(e) => setPrazoEntrega(e.target.value)} label='Prazo de entrega' />}
-                                                </MDBCol>
-                                            </MDBRow>
-                                            <MDBRow>
+                                            <MDBRow className='my-5'>
                                                 {!isLoading ?
                                                     <div className='col-md-12'>
                                                         <div style={{ color: '#DC4C64' }}>{errorMessageRef.current}</div>
@@ -613,4 +541,4 @@ const CadastroFornecedor = () => {
     );
 }
 
-export default CadastroFornecedor;
+export default CriarFornecedorNebulosa;

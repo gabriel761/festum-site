@@ -3,7 +3,7 @@ import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody, MDBSpinner, MDB
 import { getFornecedores, tratarString } from '../api/getFornecedores';
 import { Link } from 'react-router-dom';
 import { apiIpag } from '../api/apiIpag';
-const ListaPreCadastroSite = ({ statusConta }) => {
+const ListaPreCadastroSite = ({ statusConta, plano }) => {
     const [data, setData] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const messageRef = useRef('')
@@ -12,7 +12,11 @@ const ListaPreCadastroSite = ({ statusConta }) => {
     useEffect(() => {
         setIsLoading(true)
         console.log("status conta vindo do route:", statusConta)
-        getFornecedores("/fornecedoresSemDistanciaPreCadastroComStatus/" + statusConta).then(async (result) => {
+        console.log("plano vindo do route:", plano)
+        const reqUri = plano == "Pacote Nebulosa" ? 
+        "/fornecedoresSemDistanciaPreCadastroComPlano/" + plano : 
+        "/fornecedoresSemDistanciaPreCadastroComStatusEPlano/" + statusConta + "/" + plano
+        getFornecedores(reqUri).then(async (result) => {
             console.log("data fornecedores: ", result.data)
             const fornecedoresPreCadastrados = result.data
             console.log("data fornecedores: ", fornecedoresPreCadastrados)
@@ -35,7 +39,7 @@ const ListaPreCadastroSite = ({ statusConta }) => {
             messageRef.current = "Erro ao carregar fornecedores. Tente recarregar a página"
             console.log("erro ao carregar fornecedores", e)
         })
-    }, [statusConta])
+    }, [statusConta, plano])
 
     const chooseColorStatus = () => {
         switch (statusConta) {
@@ -66,7 +70,7 @@ const ListaPreCadastroSite = ({ statusConta }) => {
     }
 
     const chooseLinkAction = (item) => {
-        switch (statusConta) {
+        switch (item.status_da_conta) {
             case "Cadastro incompleto site":
                 return (
                 <Link to={{ pathname: "/cadastro-fornecedor", }} state={{ fornecedor: item }}>
