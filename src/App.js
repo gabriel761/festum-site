@@ -22,6 +22,8 @@ import DeepLinking from './pages/DeepLiking';
 import CriarFornecedorFicticio from './pages/CriarFornecedorFicticio';
 import PreCadastroFormSemPagamento from './pages/PreCadastroSemPagamento';
 import CriarFornecedorNebulosa from './pages/CriarFornecedorNebulosa';
+import ListaProdutos from './pages/ListaProdutos';
+import EditarFornecedorNebulosa from './pages/EditarFornecedorNebulosa';
 
 
 
@@ -66,8 +68,10 @@ function App() {
             <Route path='/form-precadastro-firebase' element={<FormPreCadastroFirebase />} />
             <Route path='/deeplinking' element={<DeepLinking />} />
             <Route path='/criar-fornecedor-ficticio' element={<Private setSigned={setSigned} signed={signed} Item={CriarFornecedorFicticio} />} />
-            <Route path='/form-precadastro-sempagamento' element={<PreCadastroFormSemPagamento/>} />
-            <Route path='/form-pacote-nebulosa' element={<CriarFornecedorNebulosa/>} />
+            <Route path='/form-precadastro-sempagamento' element={<Private setSigned={setSigned} signed={signed} Item={PreCadastroFormSemPagamento} />} />
+            <Route path='/form-pacote-nebulosa' element={<Private setSigned={setSigned} signed={signed} Item={CriarFornecedorNebulosa} />} />
+            <Route path='/lista-produtos' element={<Private setSigned={setSigned} signed={signed} Item={ListaProdutos} />}/>
+            <Route path='/editar-fornecedor-nebulosa' element={<Private setSigned={setSigned} signed={signed} Item={EditarFornecedorNebulosa} />}/>
           </Routes>
         </Router>
       </UserContext.Provider>

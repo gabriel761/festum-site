@@ -1,11 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody, MDBSpinner, MDBContainer } from 'mdb-react-ui-kit';
+import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody, MDBSpinner, MDBContainer,MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem } from 'mdb-react-ui-kit';
 import { getFornecedores, tratarString } from '../api/getFornecedores';
 import { Link } from 'react-router-dom';
 import { apiIpag } from '../api/apiIpag';
+import MiniMenuAction from './MiniMenuActions';
 const ListaPreCadastroSite = ({ statusConta, plano }) => {
     const [data, setData] = useState([])
     const [isLoading, setIsLoading] = useState(false)
+
+    const dataRef = useRef([])
     const messageRef = useRef('')
     const colorsStatus = useRef('warning')
 
@@ -17,27 +20,29 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
         "/fornecedoresSemDistanciaPreCadastroComPlano/" + plano : 
         "/fornecedoresSemDistanciaPreCadastroComStatusEPlano/" + statusConta + "/" + plano
         getFornecedores(reqUri).then(async (result) => {
-            console.log("data fornecedores: ", result.data)
+            
             const fornecedoresPreCadastrados = result.data
             console.log("data fornecedores: ", fornecedoresPreCadastrados)
             messageRef.current = ''
             if (fornecedoresPreCadastrados.length == 0) {
-                setIsLoading(false)
+               
                 messageRef.current = "Não há fornecedores com esse status de conta"
-                setData([])
+                dataRef.current = []
+                setIsLoading(false)
             } else {
                 //let fornecedoresParaLista = await compararContasPreCadastradasComContasPagasDoIpag(fornecedoresPreCadastrados)
                 // if (fornecedoresParaLista.length == 0) {
                 //     messageRef.current = "Não há mais fornecedores com este status"
                 // }
                 // setData(fornecedoresParaLista)
-                setData(fornecedoresPreCadastrados)
+                dataRef.current = fornecedoresPreCadastrados
                 setIsLoading(false)
             }
         }).catch((e) => {
-            setIsLoading(false)
+           
             messageRef.current = "Erro ao carregar fornecedores. Tente recarregar a página"
             console.log("erro ao carregar fornecedores", e)
+            setIsLoading(false)
         })
     }, [statusConta, plano])
 
@@ -57,10 +62,12 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
     const chooseColorStatusPagamento = (statusPagamento) => {
         switch (statusPagamento) {
             case "recusado":
+            case "DECLINED":
                 return "danger"; // amarelo
                 break;
             case "ativo":
             case "aprovado e capturado":
+            case "CAPTURED":
                 return "success";//verde
                 break;
             default:
@@ -91,6 +98,7 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
 
         }
     }
+
     const compararContasPreCadastradasComContasPagasDoIpag = async (fornecedoresPreCadastrados) => {
         try {
             const result = await apiIpag.request({
@@ -159,7 +167,7 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
                     </MDBTableHead>
                     <MDBTableBody>
 
-                        {data.length != 0 ? data.map((item) => {
+                        {dataRef.current.length != 0 ? dataRef.current.map((item) => {
                             return (
 
                                 <tr key={item.pk_id}>
@@ -188,7 +196,7 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
 
                                     </td>
                                     <td>
-                                        {chooseLinkAction(item)}
+                                        <MiniMenuAction item={item}/>
                                     </td>
                                 </tr>
 

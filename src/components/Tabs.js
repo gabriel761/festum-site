@@ -32,11 +32,6 @@ export default function Tabs({fillActive, setFillActive}) {
               Contas Ativas
             </MDBTabsLink>
           </MDBTabsItem>
-          <MDBTabsItem >
-            <MDBTabsLink className='shadow-2-strong' onClick={() => handleFillClick('usuario ficticio')} active={fillActive === 'usuario ficticio'}>
-              Usuários Fictícios
-            </MDBTabsLink>
-          </MDBTabsItem>
         </MDBTabs>
       </MDBContainer>
       
