@@ -19,7 +19,7 @@ export default function MiniMenuAction({ item }) {
                 optionsToDisable.push("")
                 break;
             case "Pacote Nebulosa":
-                optionsToDisable.push("Completar Cadastro","Adicionar Produto", "Listar Produtos Cadastrados", "Editar Fornecedor")
+                optionsToDisable.push("Completar Cadastro")
                 break;
 
         }
@@ -28,7 +28,7 @@ export default function MiniMenuAction({ item }) {
                 optionsToDisable.push("Adicionar Produto", "Listar Produtos Cadastrados", "Editar Fornecedor")
                 break;
             case "ativo":
-                optionsToDisable.push("Completar Cadastro","Adicionar Produto", "Listar Produtos Cadastrados", "Editar Fornecedor")
+                optionsToDisable.push("Completar Cadastro",)
                 break;
         }
         return optionsToDisable

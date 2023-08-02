@@ -46,7 +46,7 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
         })
     }, [statusConta, plano])
 
-    const chooseColorStatus = () => {
+    const chooseColorStatus = (statusConta) => {
         switch (statusConta) {
             case "Cadastro incompleto site":
                 return "warning"; // amarelo
@@ -55,7 +55,8 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
                 return "success";//verde
                 break;
             default:
-                return "warnig";
+                return "warning";
+                break
 
         }
     }
@@ -157,7 +158,11 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
                 <MDBTable align='middle'>
                     <MDBTableHead>
                         <tr>
-                            <th scope='col'>Nome Completo</th>
+                            {(statusConta == "Cadastro incompleto site" && plano =="Pacote Estrelar")?
+                             <th scope='col'>Nome Completo</th>
+                            :
+                             <th scope='col'>Nome da Loja</th>
+                            }
                             <th scope='col'>E-mail</th>
                             <th scope='col'>Telefone</th>
                             <th scope='col'>Status de pagamento</th>
@@ -173,7 +178,12 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
                                 <tr key={item.pk_id}>
 
                                     <td>
-                                        <p className='text-muted mb-0'>{item.nome} {item.sobrenome}</p>
+                                        {statusConta == "Cadastro incompleto site" && plano =="Pacote Estrelar"?
+                                        <p className='text-muted mb-0' key={item.nome}>{item.nome} {item.sobrenome}</p>
+                                        :
+                                        <p className='text-muted mb-0' key={item.nome_loja}>{item.nome_loja}</p>
+                                        }
+                                        
                                     </td>
                                     <td>
                                         <p className='text-muted mb-0'>{item.email}</p>
@@ -190,7 +200,7 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
                                     </td>
                                     <td>
 
-                                        <MDBBadge color={chooseColorStatus()} pill>
+                                        <MDBBadge color={chooseColorStatus(item.status_da_conta)} pill>
                                             {item.status_da_conta}
                                         </MDBBadge>
 

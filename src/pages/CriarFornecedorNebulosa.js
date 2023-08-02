@@ -219,7 +219,7 @@ const CriarFornecedorNebulosa = () => {
                 console.log("handle submit")
                 let dadosInteresse = { horarioFuncionamento, prazoProducao: prazoProducao + " " + prazoProducaoTipoRef.current, prazoEntrega: prazoEntrega + " " + prazoEntregaTipoRef.current, fazEntrega }
                 console.log("dados de interesse: ", dadosInteresse)
-                newValues = { ...values, localizacao: JSON.stringify(data.location), endereco: data.finalAddress, cidade, segmentos: segmentos, categorias: categorias, subcategorias: subcategorias, cnpj: cnpjRef.current, tipoTel: tipoTel, imagem: perfilImage, cep, galeria, imagemFundo, formaPagamento: JSON.stringify(formaPagamento), descricaoLoja, dadosInteresse: JSON.stringify(dadosInteresse),statusPagamento: "conta gratuita", statusConta: "conta gratuita", plano: "Pacote Nebulosa" }
+                newValues = { ...values, localizacao: JSON.stringify(data.location), endereco: data.finalAddress, cidade, segmentos: segmentos, categorias: categorias, subcategorias: subcategorias, cnpj:cnpj, tipoTel: tipoTel, imagem: perfilImage, cep, galeria, imagemFundo, formaPagamento: JSON.stringify(formaPagamento), descricaoLoja, dadosInteresse: JSON.stringify(dadosInteresse),statusPagamento: "conta gratuita", statusConta: "conta gratuita", plano: "Pacote Nebulosa" }
                 if (cpf) {
                     newValues.cnpj = null;
                     newValues = { ...newValues, cpf: cpf }

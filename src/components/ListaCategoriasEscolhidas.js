@@ -1,7 +1,7 @@
 import { MDBBtn } from "mdb-react-ui-kit";
 import { useState } from "react";
 const ListaCategoriasEscolhidas = ({data, setData}) => {
-    
+    console.log("segmentos dentro do componente: ", data)
   
     const removeItem = (flatItem) => {
         const newData = data.filter((item) => item != flatItem)

@@ -27,21 +27,23 @@ import { formasDePagamentoData } from '../objects/formasDePagamento';
 import { redirect, useLocation, useNavigate } from 'react-router-dom';
 import { efetuarCriarFornecedorFicticio } from '../functions/efetuarCriarFornecedorFicticio';
 import { efetuarCadastroNebulosa } from '../functions/efetuarCadastroNebulosa';
+import { efetuarUpdateFornecedorNebulosa } from '../functions/efetuarUpdateFornecedorNebulosa';
 
 
 
 
 const EditarFornecedorNebulosa = () => {
 
-
+   
 
     const navigate = useNavigate()
     let { state } = useLocation();
     const { fornecedor } = state
-
+    console.log("segmentos do banco de dados: ", fornecedor.segmento)
     
 
     const transformSegmentoCategoriaSubcategoria = (array) => {
+        
         const transformed = array.map((item) => {
           return {
             nome: item
@@ -56,9 +58,9 @@ const EditarFornecedorNebulosa = () => {
     const [perfilImage, setPerfilImage] = useState(fornecedor.imagem);
     const [imagemFundo, setImagemFundo] = useState(fornecedor.foto_de_fundo);
     const [tipoTel, setTipoTel] = useState("Celular")
-    const [cep, setCep] = useState('')
-    const [cnpj, setCnpj] = useState('')
-    const [cpf, setCpf] = useState('')
+    const [cep, setCep] = useState(fornecedor.cep)
+    const [cnpj, setCnpj] = useState(fornecedor.cnpj?fornecedor.cnpj:'')
+    const [cpf, setCpf] = useState(fornecedor.cpf?fornecedor.cpf:'')
     const [cpfMessage, setCpfMessage] = useState('')
     const [uf, setUf] = useState('')
     const [cidade, setCidade] = useState('')
@@ -70,7 +72,7 @@ const EditarFornecedorNebulosa = () => {
     const [segmentosData, setSegmentosData] = useState([])
     const [categoriasData, setCategoriasData] = useState([])
     const [subcategoriasData, setSubcategoriasData] = useState([])
-    const [segmentos, setSegmentos] = useState(transformSegmentoCategoriaSubcategoria( fornecedor.segmento.split(", ")))
+    const [segmentos, setSegmentos] = useState(transformSegmentoCategoriaSubcategoria(fornecedor.segmento.split(", ")))
     const [categorias, setCategorias] = useState(transformSegmentoCategoriaSubcategoria(fornecedor.categoria.split(", ")))
     const [subcategorias, setSubcategorias] = useState(transformSegmentoCategoriaSubcategoria(fornecedor.subcategoria.split(", ")))
     const [formaPagamento, setFormaPagamento] = useState([])
@@ -81,15 +83,15 @@ const EditarFornecedorNebulosa = () => {
     const [prazoEntrega, setPrazoEntrega] = useState('')
     const prazoEntregaTipoRef = useRef("Minutos")
     const prazoProducaoTipoRef = useRef("Minutos")
-    const [galeria, setGaleria] = useState([])
+    const [galeria, setGaleria] = useState(JSON.parse(fornecedor.galeria))
 
     const cepRef = useRef(null)
     const cepValid = useRef(false)
     const cnpjInputRef = useRef(null)
     const cnpjRef = useRef(null)
-    const cnpjIsValidRef = useRef(false)
+    const cnpjIsValidRef = useRef(!!fornecedor.cnpj)
     const cpfRef = useRef(null)
-    const cpfIsValid = useRef(false)
+    const cpfIsValid = useRef(!!fornecedor.cnpj)
     const subcategoriaSugestRef = useRef('')
     const errorMessageRef = useRef('')
 
@@ -129,6 +131,14 @@ const EditarFornecedorNebulosa = () => {
                 setCategoriasData([...result.data, { nome: "Todos", pk_id: 0 }])
             })
         })
+        onChangeCep(fornecedor.cep)
+        if(fornecedor.cnpj){
+            onChangeCnpj(fornecedor.cnpj)
+        }
+        if(fornecedor.cpf){
+            maskCPF(fornecedor.cpf)
+        }
+        
     }, [])
 
     const onChangeCep = (value) => {
@@ -231,12 +241,12 @@ const EditarFornecedorNebulosa = () => {
                 console.log("handle submit")
                 let dadosInteresse = { horarioFuncionamento, prazoProducao: prazoProducao + " " + prazoProducaoTipoRef.current, prazoEntrega: prazoEntrega + " " + prazoEntregaTipoRef.current, fazEntrega }
                 console.log("dados de interesse: ", dadosInteresse)
-                newValues = { ...values, localizacao: JSON.stringify(data.location), endereco: data.finalAddress, cidade, segmentos: segmentos, categorias: categorias, subcategorias: subcategorias, cnpj: cnpjRef.current, tipoTel: tipoTel, imagem: perfilImage, cep, galeria, imagemFundo, formaPagamento: JSON.stringify(formaPagamento), descricaoLoja, dadosInteresse: JSON.stringify(dadosInteresse),statusPagamento: "conta gratuita", statusConta: "conta gratuita", plano: "Pacote Nebulosa" }
+                newValues = { ...values, localizacao: JSON.stringify(data.location), endereco: data.finalAddress, cidade, segmentos: segmentos, categorias: categorias, subcategorias: subcategorias, cnpj: cnpj, tipoTel: tipoTel, imagem: perfilImage, cep, galeria:galeria, imagemFundo, formaPagamento: JSON.stringify(formaPagamento), descricaoLoja, dadosInteresse: JSON.stringify(dadosInteresse),statusPagamento: "conta gratuita", statusConta: "conta gratuita", plano: "Pacote Nebulosa" }
                 if (cpf) {
                     newValues.cnpj = null;
                     newValues = { ...newValues, cpf: cpf }
                     try {
-                        const { message } = await efetuarCadastroNebulosa(newValues)
+                        const { message } = await efetuarUpdateFornecedorNebulosa(newValues)
                         errorMessageRef.current = message
 
                         setIsLoading(false)
@@ -254,7 +264,7 @@ const EditarFornecedorNebulosa = () => {
                     postDataFromDatabase("/getCnpj", newValues.cnpj).then(async (result) => {
                         if (!result.data.error) {
                             try {
-                                const { message } = await efetuarCadastroNebulosa(newValues)
+                                const { message } = await efetuarUpdateFornecedorNebulosa(newValues)
                                 errorMessageRef.current = message
                                 setIsLoading(false)
                                 if (message.length == 0) {
@@ -332,7 +342,7 @@ const EditarFornecedorNebulosa = () => {
                                 </MDBCol>
                             </MDBRow>
                             <Formik
-                                initialValues={{ nome: '', sobrenome: '', email: '', senha: '', senhaConfirmar: '', nomeLoja: '', numero: '', complemento: '', cnpj: '', tel: '', instagram: '', instagramLink: '', endereco: '', cidade: '', palavrasChave: '', categoria: '', subcategoria: '', segmento: '', preco: '' }}
+                                initialValues={{  email: fornecedor.email, nomeLoja: fornecedor.nome_loja, numero: fornecedor.numero , complemento: fornecedor.complemento, cnpj: '', tel: fornecedor.telefone, instagram: '', instagramLink: '', endereco: '', cidade: '', palavrasChave: '', categoria: '', subcategoria: '', segmento: '', preco: fornecedor.preco }}
                                 onSubmit={(values) => handleSubmit(values)}
                                 validationSchema={validationSchema}
                             >
