@@ -1,10 +1,11 @@
 import React from 'react';
 import { MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem } from 'mdb-react-ui-kit';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function MiniMenuAction({ item }) {
     const { planos, status_da_conta } = item
     let arrayDisabledOptions = []
+    const navigate = useNavigate()
     const options = [
         { name: "Completar Cadastro", path: "/cadastro-fornecedor" },
         { name: "Editar Fornecedor", path: planos == "Pacote Estrelar" ? "/editar-fornecedor-estrelar" : "/editar-fornecedor-nebulosa" },
@@ -34,6 +35,11 @@ export default function MiniMenuAction({ item }) {
         return optionsToDisable
     }
 
+    const handleClick = (path, data) => {
+        
+        navigate(path, {state:{fornecedor: data}})
+    }
+
     arrayDisabledOptions = addDisabledOptions()
     if (item) {
         return (
@@ -42,10 +48,10 @@ export default function MiniMenuAction({ item }) {
                 <MDBDropdownMenu>
                     {options.map((option) => {
                         return (
-                            <MDBDropdownItem link disabled={arrayDisabledOptions.includes(option.name)}>
-                                <Link style={{ color: "inherit" }} to={{ pathname: option.path }} state={{ fornecedor: item }}>
+                            <MDBDropdownItem link href='' onClick={() => handleClick(option.path, item)} disabled={arrayDisabledOptions.includes(option.name)}>
+                               
                                     {option.name}
-                                </Link>
+                                
                             </MDBDropdownItem>
                         )
                     })}

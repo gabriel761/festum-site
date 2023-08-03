@@ -241,7 +241,7 @@ const EditarFornecedorNebulosa = () => {
                 console.log("handle submit")
                 let dadosInteresse = { horarioFuncionamento, prazoProducao: prazoProducao + " " + prazoProducaoTipoRef.current, prazoEntrega: prazoEntrega + " " + prazoEntregaTipoRef.current, fazEntrega }
                 console.log("dados de interesse: ", dadosInteresse)
-                newValues = { ...values, localizacao: JSON.stringify(data.location), endereco: data.finalAddress, cidade, segmentos: segmentos, categorias: categorias, subcategorias: subcategorias, cnpj: cnpj, tipoTel: tipoTel, imagem: perfilImage, cep, galeria:galeria, imagemFundo, formaPagamento: JSON.stringify(formaPagamento), descricaoLoja, dadosInteresse: JSON.stringify(dadosInteresse),statusPagamento: "conta gratuita", statusConta: "conta gratuita", plano: "Pacote Nebulosa" }
+                newValues = { ...values, localizacao: JSON.stringify(data.location), endereco: data.finalAddress, cidade, segmentos: segmentos, categorias: categorias, subcategorias: subcategorias, cnpj: cnpj, tipoTel: tipoTel, imagem: perfilImage, cep, galeria:galeria, imagemFundo, formaPagamento: JSON.stringify(formaPagamento), descricaoLoja, dadosInteresse: JSON.stringify(dadosInteresse),statusPagamento: "conta gratuita", statusConta: "conta gratuita", plano: "Pacote Nebulosa", id: fornecedor.pk_id, idPessoa: fornecedor.fk_fornecedor_pessoa }
                 if (cpf) {
                     newValues.cnpj = null;
                     newValues = { ...newValues, cpf: cpf }
@@ -251,8 +251,8 @@ const EditarFornecedorNebulosa = () => {
 
                         setIsLoading(false)
                         if (message.length == 0) {
-                            alert("Cadastro completado com sucesso!")
-
+                            alert("Fornecedor editado com sucesso!")
+                            navigate(-1)
                         }
                     } catch (e) {
                         errorMessageRef.current = e.message
@@ -268,7 +268,8 @@ const EditarFornecedorNebulosa = () => {
                                 errorMessageRef.current = message
                                 setIsLoading(false)
                                 if (message.length == 0) {
-                                    alert("Cadastro completado com sucesso!")
+                                    alert("Fornecedor editado com sucesso!")
+                                   navigate(-1)
                                 }
                             } catch (e) {
                                 errorMessageRef.current = e.message

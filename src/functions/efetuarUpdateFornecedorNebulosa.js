@@ -1,21 +1,16 @@
-
 import verifyErrorCode from "../services/verifyErrorCode";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { storage } from "../services/firebase"
 import  "firebase/compat/auth";
 import { auth } from "../services/firebase";
 import api from "../api/api";
-import { getFornecedores } from "../api/getFornecedores";
-import { postFornecedores } from "../api/postFornecedores";
-
 
 let message = ''
 let isLoading = false
-let error = false
 export const efetuarUpdateFornecedorNebulosa = async (values) => {
   console.log("values dentro do efetuar cadastro: ", values)
   try {
-   let newValues = values
+    let newValues = values
    
     if(!newValues.imagem.includes("firebasestorage")){
         newValues = await uploadImageToFirebase(newValues)
@@ -30,21 +25,14 @@ export const efetuarUpdateFornecedorNebulosa = async (values) => {
       newValues.fotoFundo = newValues.imagemFundo
     }
     newValues = await sendToBackEnd(newValues)
-   
-    //   await auth.createUserWithEmailAndPassword(values.email, values.senha)
-    // let currentUser = auth.currentUser
-    // console.log("current user cadastro cliente: ", currentUser)
-    // await updateFirebaseId(currentUser.uid, currentUser.email)
-    // auth.signOut()
-    return { message, isLoading, error }
+    
   } catch (e) {
     console.log(e)
     message = verifyErrorCode(e.code)
-    return { message, isLoading }
 
   }
 
-  
+  return { message, isLoading }
 }
 // função para fazer upload da imagem ao firebase
 const uploadImageToFirebase = async (newValues) => {
@@ -54,7 +42,7 @@ const uploadImageToFirebase = async (newValues) => {
     const response = await fetch(imageUri)
     const blob = await response.blob()
     const filename = imageUri.substring(imageUri.lastIndexOf("/") + 1)
-    const storageRef = ref(storage, "perfilFornecedor/" + filename)
+    const storageRef = ref(storage, "files/" + filename)
     const metadata = await uploadBytes(storageRef, blob)
     const url = await getDownloadURL(metadata.ref)
     console.log(url)
@@ -74,7 +62,7 @@ const uploadFotoFundo = async (newValues) => {
     const response = await fetch(imageUri)
     const blob = await response.blob()
     const filename = imageUri.substring(imageUri.lastIndexOf("/") + 1)
-    const storageRef = ref(storage, "fundo/" + filename)
+    const storageRef = ref(storage, "files/" + filename)
     const metadata = await uploadBytes(storageRef, blob)
     const url = await getDownloadURL(metadata.ref)
     console.log(url)
@@ -91,10 +79,14 @@ const uploadGaleryToFirebase = async (newValues) => {
   const galeria = newValues.galeria
   let newGaleria = []
   newGaleria = await Promise.all( galeria.map(async item => {
-      let url = ""
-      url =  await upload(item)
-      console.log("galeria url: ", url)
-      return url
+        if(!item.includes("firebasestorage")){
+            let url = ""
+            url =  await upload(item)
+            console.log("galeria url: ", url)
+            return url
+        }else{
+          return item
+        }   
   }));
   console.log("galeria após upload: ",newGaleria)
   newValues.galeria = JSON.stringify(newGaleria) 
@@ -120,53 +112,32 @@ const uploadGaleryToFirebase = async (newValues) => {
 const sendToBackEnd = async (values) => {
   try {
     let result = await api.request({
-      url: "/updateFornecedor",
+      url: "/updateFornecedorNebulosa",
       data: values,
       method: "POST"
     })
     if (Object.keys(result.data).length == 0) {
       // se for copiar para cadastro de cliente preste atenção nesta mensagem
-      message = "Sem resposta do servidor"
+      message = ""
       console.log("result data is empty")
 
-      
     } else {
       if (!result.data.error) {
-        message = ""
+        message = "Estamos enviando um email de confirmação, aguarde...."
 
         
         // haverá um login automático mas como o email ainda não foi confirmado a tela de confirmação de e-mail vai abrir
         // remover qualquer usuário do async storage
-        
+        await removeData("user")
         // avisar ao app que o proximo login será o login de um usuário que acabou de ser cadastrado. É só para não abrir o introSlider de novo. 
-        
+        storeData("newUser", true)
       } else {
 
-        //await auth().currentUser.delete()
+       message = result.data.message
       }
     }
   } catch (e) {
-    
- 
-    message = "Sem resposta do servidor"
-    console.log("erro do axios: ", e)
+    message = e.message
   }
   
-}
-const updateFirebaseId = async (uid, email) => {
-  try{
-    let result = await api.request({
-      url: "/updateFirebaseId/"+uid+"/"+email,
-      method: "GET"
-    })
-  }catch(e){
-    console.log("erro no update firebase id", e)
-  }
- 
-}
-
-const checkIfEmailExists = async (email) => {
-    const result = await postFornecedores("/checkIfEmailExists", {email})
-    console.log("checando email antes de cadastrar: ", result)
-    return result.data.emailExists 
 }
