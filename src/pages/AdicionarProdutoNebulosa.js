@@ -20,9 +20,9 @@ import { useState } from "react";
 import * as yup from "yup"
 import { useLocation } from "react-router-dom";
 import api from "../api/api";
+import { b64toBlob } from "../functions/Base64ToBlob";
 
-
-const AdicionarProduto = () => {
+const AdicionarProdutoNebulosa = () => {
     const [imageUri, setImageUri] = useState('')
     const [descricaoLoja, setDescricaoLoja] = useState("")
     const [status, setStatus] = useState('ativo')
@@ -36,8 +36,6 @@ const AdicionarProduto = () => {
     const validationSchema = yup.object({
         nome: yup.string().required("Campo obrigatório").min(2, "Mínimo de 2 letras"),
         descricao: yup.string().required("Campo obrigatório").min(5, "mínimo de 5 characteres e máximo de 100").max(100, "Máximo de 100 carateres"),
-        precoOriginal: yup.string().required("Campo obrigatório"),
-        precoFinal: yup.string().required("Campo obrigatório")
     })
 
     const toggleStatus = (value) => {
@@ -47,10 +45,10 @@ const AdicionarProduto = () => {
     }
 
     const uploadImageToFirebase = async (newValues) => {
-        const response = await fetch(imageUri)
-        const blob = await response.blob()
-        const filename = imageUri.substring(imageUri.lastIndexOf("/") + 1)
-        const storageRef = ref(storage, "files/" + filename)
+       
+        const blob = b64toBlob(imageUri)
+        const filename = newValues.nome.replace(" ", "-") + "-produto"
+        const storageRef = ref(storage, "produtos/" + filename)
         uploadBytes(storageRef, blob).then((metadata) => {
             console.log(metadata.metadata.ref)
             console.log(storageRef.fullPath)
@@ -127,7 +125,7 @@ const AdicionarProduto = () => {
                                 </MDBCol>
                             </MDBRow>
                             <Formik
-                                initialValues={{ nome: '', descricao: '', precoOriginal: '', precoFinal: '' }}
+                                initialValues={{ nome: '', descricao: '' }}
                                 onSubmit={(values, { resetForm }) => handleSubmit(values, resetForm)}
                                 validationSchema={validationSchema}
                             >
@@ -169,7 +167,7 @@ const AdicionarProduto = () => {
                                                         </div> :
                                                         <>
                                                             <div style={{ color: "#DC4C64" }}>{mensage}</div>
-                                                            <MDBBtn onClick={() => handleSubmit()} color="primary">Adicionar Produto</MDBBtn>
+                                                            <MDBBtn type="submit" onClick={() => handleSubmit()} color="primary">Adicionar Produto</MDBBtn>
                                                         </>
                                                     }
 
@@ -189,4 +187,4 @@ const AdicionarProduto = () => {
     );
 }
 
-export default AdicionarProduto;
+export default AdicionarProdutoNebulosa;

@@ -91,7 +91,7 @@ const EditarFornecedorNebulosa = () => {
     const cnpjRef = useRef(null)
     const cnpjIsValidRef = useRef(!!fornecedor.cnpj)
     const cpfRef = useRef(null)
-    const cpfIsValid = useRef(!!fornecedor.cnpj)
+    const cpfIsValid = useRef(!!fornecedor.cpf)
     const subcategoriaSugestRef = useRef('')
     const errorMessageRef = useRef('')
 

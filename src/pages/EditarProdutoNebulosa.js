@@ -18,20 +18,25 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { Formik } from "formik";
 import { useState } from "react";
 import * as yup from "yup"
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api/api";
+import { b64toBlob } from "../functions/Base64ToBlob";
 
 
-const AdicionarProduto = () => {
-    const [imageUri, setImageUri] = useState('')
-    const [descricaoLoja, setDescricaoLoja] = useState("")
-    const [status, setStatus] = useState('ativo')
+const EditarProdutoNebulosa = () => {
+    const navigation = useNavigate()
+    let { state } = useLocation();
+    const { produto, fornecedor } = state
+
+    const [imageUri, setImageUri] = useState(produto.imagem)
+    const [status, setStatus] = useState(produto.status)
     const [mensage, setMessage] = useState('')
     const [isLoading, setIsLoading] = useState(false)
 
-    let { state } = useLocation();
-    const { fornecedor } = state
+    
 
+    console.log("produto from route: ", produto)
+    console.log("fornecedor from route: ", fornecedor)
 
     const validationSchema = yup.object({
         nome: yup.string().required("Campo obrigatório").min(2, "Mínimo de 2 letras"),
@@ -47,9 +52,8 @@ const AdicionarProduto = () => {
     }
 
     const uploadImageToFirebase = async (newValues) => {
-        const response = await fetch(imageUri)
-        const blob = await response.blob()
-        const filename = imageUri.substring(imageUri.lastIndexOf("/") + 1)
+        const blob = b64toBlob(imageUri)
+        const filename = newValues.nome.replace(" ", "-") + "-perfil"
         const storageRef = ref(storage, "files/" + filename)
         uploadBytes(storageRef, blob).then((metadata) => {
             console.log(metadata.metadata.ref)
@@ -70,7 +74,7 @@ const AdicionarProduto = () => {
 
     const sendToBackEnd = (values) => {
         api.request({
-            url: "/addProdutoSite",
+            url: "/updateProdutoSite",
             data: values,
             method: "POST",
         }).then((result) => {
@@ -80,7 +84,7 @@ const AdicionarProduto = () => {
                 setMessage("Sem resposta do servidor")
             } else {
                 if (!result.data.error) {
-                    alert("Produto adicionado com sucesso!")
+                    alert("Produto editado com sucesso!")
                     setIsLoading(false)
                     history.back()
                 } else {
@@ -98,12 +102,19 @@ const AdicionarProduto = () => {
         try {
             setIsLoading(true)
             if (imageUri.length != 0) {
-                values = { ...values, status, idFornecedor: fornecedor.pk_id }
-                await uploadImageToFirebase(values)
+                values = { ...values, status, idProduto: produto.pk_id }
+                if(!imageUri.includes("firebase")){
+                    await uploadImageToFirebase(values)
+                }else{
+                    values = {...values, imagem: imageUri}
+                    sendToBackEnd(values)
+                }
+               
+                
                 
                 setMessage('')
                 setImageUri('')
-                resetForm()
+               
             } else {
                 setIsLoading(false)
                 setMessage("Por favor selecione uma imagem para o produto!")
@@ -127,7 +138,7 @@ const AdicionarProduto = () => {
                                 </MDBCol>
                             </MDBRow>
                             <Formik
-                                initialValues={{ nome: '', descricao: '', precoOriginal: '', precoFinal: '' }}
+                                initialValues={{ nome: produto.nome, descricao: produto.descricao, precoOriginal: produto.preco_original, precoFinal: produto.preco_final }}
                                 onSubmit={(values, { resetForm }) => handleSubmit(values, resetForm)}
                                 validationSchema={validationSchema}
                             >
@@ -169,7 +180,7 @@ const AdicionarProduto = () => {
                                                         </div> :
                                                         <>
                                                             <div style={{ color: "#DC4C64" }}>{mensage}</div>
-                                                            <MDBBtn onClick={() => handleSubmit()} color="primary">Adicionar Produto</MDBBtn>
+                                                            <MDBBtn type="submit" onClick={() => handleSubmit()} color="primary">Adicionar Produto</MDBBtn>
                                                         </>
                                                     }
 
@@ -189,4 +200,4 @@ const AdicionarProduto = () => {
     );
 }
 
-export default AdicionarProduto;
+export default EditarProdutoNebulosa;

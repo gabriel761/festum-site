@@ -5,7 +5,7 @@ import { storage } from "../services/firebase"
 import  "firebase/compat/auth";
 import { auth } from "../services/firebase";
 import api from "../api/api";
-
+import { b64toBlob } from './Base64ToBlob'
 
 let message = ''
 let isLoading = false
@@ -48,9 +48,8 @@ const uploadImageToFirebase = async (newValues) => {
   try {
     let imageUri = newValues.imagem
     delete newValues.imagem
-    const response = await fetch(imageUri)
-    const blob = await response.blob()
-    const filename = imageUri.substring(imageUri.lastIndexOf("/") + 1)
+    const blob = b64toBlob(imageUri)
+    const filename = newValues.nomeLoja.replace(" ", "-") + "-perfil"
     const storageRef = ref(storage, "perfilFornecedor/" + filename)
     const metadata = await uploadBytes(storageRef, blob)
     const url = await getDownloadURL(metadata.ref)
@@ -68,9 +67,8 @@ const uploadFotoFundo = async (newValues) => {
   try {
     let imageUri = newValues.imagemFundo
     delete newValues.imagemFundo
-    const response = await fetch(imageUri)
-    const blob = await response.blob()
-    const filename = imageUri.substring(imageUri.lastIndexOf("/") + 1)
+    const blob = b64toBlob(imageUri)
+    const filename = newValues.nomeLoja.replace(" ", "-") + "-fundo"
     const storageRef = ref(storage, "fundo/" + filename)
     const metadata = await uploadBytes(storageRef, blob)
     const url = await getDownloadURL(metadata.ref)
@@ -87,9 +85,9 @@ const uploadFotoFundo = async (newValues) => {
 const uploadGaleryToFirebase = async (newValues) => {
   const galeria = newValues.galeria
   let newGaleria = []
-  newGaleria = await Promise.all( galeria.map(async item => {
+  newGaleria = await Promise.all( galeria.map(async (item, index) => {
       let url = ""
-      url =  await upload(item)
+      url =  await upload(item, index, newValues)
       console.log("galeria url: ", url)
       return url
   }));
@@ -99,11 +97,10 @@ const uploadGaleryToFirebase = async (newValues) => {
 
 }
 
-  const upload = async (imageUri) => {
+  const upload = async (imageUri, index, newValues) => {
     try {
-      const response = await fetch(imageUri)
-      const blob = await response.blob()
-      const filename = imageUri.substring(imageUri.lastIndexOf("/") + 1)
+      const blob = b64toBlob(imageUri)
+      const filename = newValues.nomeLoja.replace(" ", "-") + "-galeria" + index
       const storageRef = ref(storage, "galery/" + filename)
       const metadata = await uploadBytes(storageRef, blob)
       const url = await getDownloadURL(metadata.ref)

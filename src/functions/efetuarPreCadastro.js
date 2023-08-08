@@ -4,7 +4,7 @@ import { storage } from "../services/firebase"
 import  "firebase/compat/auth";
 import { auth } from "../services/firebase";
 import api from "../api/api";
-
+import { b64toBlob } from './Base64ToBlob'
 
 let message = ''
 let error = false

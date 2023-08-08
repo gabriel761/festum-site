@@ -25,24 +25,39 @@ import ImageUploaderFundo from '../components/ImageUploaderFundo';
 import { efetuarCadastroFornecedor } from '../functions/efetuarCadastroFornecedor';
 import { formasDePagamentoData } from '../objects/formasDePagamento';
 import { redirect, useLocation, useNavigate } from 'react-router-dom';
+import {efetuarUpdateFornecedor} from '../functions/efetuarUpdateFornecedor'
 
 
 
 
-const CadastroFornecedor = () => {
+const EditarFornecedor = () => {
 
 
 
     const navigate = useNavigate()
+    let { state } = useLocation();
+    const { fornecedor } = state
 
+    const transformSegmentoCategoriaSubcategoria = (array) => {
+
+        const transformed = array.map((item) => {
+            return {
+                nome: item
+            }
+        })
+        console.log("transform segmentos: ", transformed)
+        return transformed
+    }
+    let dados_de_interesse = fornecedor.dados_de_interesse ? JSON.parse(fornecedor.dados_de_interesse) : null 
+    console.log("dados de interesse: ", dados_de_interesse)
     // const [message,errorMessageRef.current =  = useState('')
     const [isLoading, setIsLoading] = useState(false)
-    const [perfilImage, setPerfilImage] = useState(null);
-    const [imagemFundo, setImagemFundo] = useState(null);
-    const [tipoTel, setTipoTel] = useState('')
+    const [perfilImage, setPerfilImage] = useState(fornecedor.imagem);
+    const [imagemFundo, setImagemFundo] = useState(fornecedor.foto_de_fundo);
+    const [tipoTel, setTipoTel] = useState('Celular')
     const [cep, setCep] = useState('')
-    const [cnpj, setCnpj] = useState('')
-    const [cpf, setCpf] = useState('')
+    const [cnpj, setCnpj] = useState(fornecedor.cnpj?fornecedor.cnpj:'')
+    const [cpf, setCpf] = useState(fornecedor.cpf ? fornecedor.cpf : '')
     const [cpfMessage, setCpfMessage] = useState('')
     const [uf, setUf] = useState('')
     const [cidade, setCidade] = useState('')
@@ -54,31 +69,30 @@ const CadastroFornecedor = () => {
     const [segmentosData, setSegmentosData] = useState([])
     const [categoriasData, setCategoriasData] = useState([])
     const [subcategoriasData, setSubcategoriasData] = useState([])
-    const [segmentos, setSegmentos] = useState([])
-    const [categorias, setCategorias] = useState([])
-    const [subcategorias, setSubcategorias] = useState([])
-    const [formaPagamento, setFormaPagamento] = useState([])
-    const [horarioFuncionamento, setHorarioFuncionamento] = useState('')
-    const [descricaoLoja, setDescricaoLoja] = useState()
-    const [prazoProducao, setPrazoProducao] = useState('')
-    const [fazEntrega, setFazEntrega] = useState("Não")
-    const [prazoEntrega, setPrazoEntrega] = useState('')
+    const [segmentos, setSegmentos] = useState(transformSegmentoCategoriaSubcategoria(fornecedor.segmento.split(", ")))
+    const [categorias, setCategorias] = useState(transformSegmentoCategoriaSubcategoria(fornecedor.categoria.split(", ")))
+    const [subcategorias, setSubcategorias] = useState(transformSegmentoCategoriaSubcategoria(fornecedor.subcategoria.split(", ")))
+    const [formaPagamento, setFormaPagamento] = useState(JSON.parse(fornecedor.formas_de_pagamento))
+    const [horarioFuncionamento, setHorarioFuncionamento] = useState(dados_de_interesse.horarioFuncionamento)
+    const [descricaoLoja, setDescricaoLoja] = useState(fornecedor.descricao)
+    const [prazoProducao, setPrazoProducao] = useState(dados_de_interesse.prazoProducao)
+    const [fazEntrega, setFazEntrega] = useState(dados_de_interesse.fazEntrega)
+    const [prazoEntrega, setPrazoEntrega] = useState(dados_de_interesse.prazoEntrega)
     const prazoEntregaTipoRef = useRef("Minutos")
     const prazoProducaoTipoRef = useRef("Minutos")
-    const [galeria, setGaleria] = useState([])
+    const [galeria, setGaleria] = useState(fornecedor.galeria ? JSON.parse(fornecedor.galeria) : [])
 
     const cepRef = useRef(null)
     const cepValid = useRef(false)
     const cnpjInputRef = useRef(null)
     const cnpjRef = useRef(null)
-    const cnpjIsValidRef = useRef(false)
+    const cnpjIsValidRef = useRef(!!fornecedor.cnpj)
     const cpfRef = useRef(null)
-    const cpfIsValid = useRef(false)
+    const cpfIsValid = useRef(!!fornecedor.cpf)
     const subcategoriaSugestRef = useRef('')
     const errorMessageRef = useRef('')
 
-    let { state } = useLocation();
-    const { fornecedor } = state
+   
 
     console.log("use location: ", state)
 
@@ -118,6 +132,13 @@ const CadastroFornecedor = () => {
                 setCategoriasData([...result.data, { nome: "Todos", pk_id: 0 }])
             })
         })
+        onChangeCep(fornecedor.cep)
+        if (fornecedor.cnpj) {
+            onChangeCnpj(fornecedor.cnpj)
+        }
+        if (fornecedor.cpf) {
+            maskCPF(fornecedor.cpf)
+        }
     }, [])
 
     const onChangeCep = (value) => {
@@ -228,7 +249,7 @@ const CadastroFornecedor = () => {
                     try {
                         newValues.cnpj = null;
                         newValues = { ...newValues, cpf: cpf }
-                        await efetuarCadastroFornecedor(newValues)
+                        await efetuarUpdateFornecedor(newValues)
 
                         errorMessageRef.current = ''
                         setIsLoading(false)
@@ -244,7 +265,7 @@ const CadastroFornecedor = () => {
                     postDataFromDatabase("/getCnpj", newValues.cnpj).then(async (result) => {
                         if (!result.data.error) {
                             try {
-                                await efetuarCadastroFornecedor(newValues)
+                                await efetuarUpdateFornecedor(newValues)
 
                                 errorMessageRef.current = ''
                                 setIsLoading(false)
@@ -338,7 +359,7 @@ const CadastroFornecedor = () => {
                                 </MDBCol>
                             </MDBRow>
                             <Formik
-                                initialValues={{ nomeLoja: '', numero: '', complemento: '', cnpj: '', tel: '', instagram: '', instagramLink: '', endereco: '', cidade: '', palavrasChave: '', categoria: '', subcategoria: '', segmento: '', preco: '' }}
+                                initialValues={{ nomeLoja: fornecedor.nome_loja, numero: fornecedor.numero, complemento: fornecedor.complemento, cnpj: '', tel: fornecedor.telefone, instagram: fornecedor.instagram, instagramLink: fornecedor.instagramlink, endereco: '', cidade: '', palavrasChave: fornecedor.palavras_chave, categoria: '', subcategoria: '', segmento: '', preco: fornecedor.preco }}
                                 onSubmit={(values) => handleSubmit(values)}
                                 validationSchema={validationSchema}
                             >
@@ -613,4 +634,4 @@ const CadastroFornecedor = () => {
     );
 }
 
-export default CadastroFornecedor;
+export default EditarFornecedor;

@@ -24,6 +24,10 @@ import PreCadastroFormSemPagamento from './pages/PreCadastroSemPagamento';
 import CriarFornecedorNebulosa from './pages/CriarFornecedorNebulosa';
 import ListaProdutos from './pages/ListaProdutos';
 import EditarFornecedorNebulosa from './pages/EditarFornecedorNebulosa';
+import EditarProdutoNebulosa from './pages/EditarProdutoNebulosa';
+import EditarFornecedor from './pages/EditarFornecedor';
+import AdicionarProdutoNebulosa from './pages/AdicionarProdutoNebulosa';
+import EditarProduto from './pages/EditarProduto';
 
 
 
@@ -65,6 +69,7 @@ function App() {
             <Route path='/email-confirmado' element={<EmailConfirmado />} />
             <Route path='/pagamento-confirmado' element={<PagamentoConfirmado />} />
             <Route path='/adicionar-produto' element={<AdicionarProduto />} />
+            <Route path='/adicionar-produto-nebulosa' element={<AdicionarProdutoNebulosa />} />
             <Route path='/form-precadastro-firebase' element={<FormPreCadastroFirebase />} />
             <Route path='/deeplinking' element={<DeepLinking />} />
             <Route path='/criar-fornecedor-ficticio' element={<Private setSigned={setSigned} signed={signed} Item={CriarFornecedorFicticio} />} />
@@ -72,6 +77,9 @@ function App() {
             <Route path='/form-pacote-nebulosa' element={<Private setSigned={setSigned} signed={signed} Item={CriarFornecedorNebulosa} />} />
             <Route path='/listar-produtos' element={<Private setSigned={setSigned} signed={signed} Item={ListaProdutos} />}/>
             <Route path='/editar-fornecedor-nebulosa' element={<Private setSigned={setSigned} signed={signed} Item={EditarFornecedorNebulosa} />}/>
+            <Route path='/editar-fornecedor-estrelar' element={<Private setSigned={setSigned} signed={signed} Item={EditarFornecedor} />} />
+            <Route path='/editar-produto-nebulosa' element={<Private setSigned={setSigned} signed={signed} Item={EditarProdutoNebulosa} />} />
+            <Route path='/editar-produto' element={<Private setSigned={setSigned} signed={signed} Item={EditarProduto} />} />
           </Routes>
         </Router>
       </UserContext.Provider>

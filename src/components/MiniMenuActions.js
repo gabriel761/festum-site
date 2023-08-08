@@ -9,7 +9,7 @@ export default function MiniMenuAction({ item }) {
     const options = [
         { name: "Completar Cadastro", path: "/cadastro-fornecedor" },
         { name: "Editar Fornecedor", path: planos == "Pacote Estrelar" ? "/editar-fornecedor-estrelar" : "/editar-fornecedor-nebulosa" },
-        { name: "Adicionar Produto", path: "/adicionar-produto" },
+        { name: "Adicionar Produto", path: planos == "Pacote Estrelar" ? "/adicionar-produto": "/adicionar-produto-nebulosa" },
         { name: "Listar Produtos Cadastrados", path: "/listar-produtos" }
     ]
 
