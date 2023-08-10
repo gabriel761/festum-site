@@ -198,6 +198,8 @@ const EditarFornecedorNebulosa = () => {
 
         if (value.length == 18) {
             cnpjIsValidRef.current = validarCNPJ(value)
+        } else if (value.length == 0) {
+            cnpjIsValidRef.current = true
         } else {
             cnpjIsValidRef.current = false
         }
@@ -227,8 +229,13 @@ const EditarFornecedorNebulosa = () => {
                 cpfIsValid.current = true
 
             } else {
+                cpfIsValid.current = false
                 setCpfMessage("CPF inválido")
             }
+        } else if (cpf.length == 0) {
+            cpfIsValid.current = true
+        } else {
+            cpfIsValid.current = false
         }
         setCpf(cpf)
     }

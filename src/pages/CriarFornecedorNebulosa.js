@@ -73,9 +73,9 @@ const CriarFornecedorNebulosa = () => {
     const cepValid = useRef(false)
     const cnpjInputRef = useRef(null)
     const cnpjRef = useRef(null)
-    const cnpjIsValidRef = useRef(false)
+    const cnpjIsValidRef = useRef(true)
     const cpfRef = useRef(null)
-    const cpfIsValid = useRef(false)
+    const cpfIsValid = useRef(true)
     const subcategoriaSugestRef = useRef('')
     const errorMessageRef = useRef('')
 
@@ -176,7 +176,9 @@ const CriarFornecedorNebulosa = () => {
 
         if (value.length == 18) {
             cnpjIsValidRef.current = validarCNPJ(value)
-        } else {
+        }else if(value.length == 0){
+            cnpjIsValidRef.current = true
+        }else {
             cnpjIsValidRef.current = false
         }
 
@@ -205,8 +207,13 @@ const CriarFornecedorNebulosa = () => {
                 cpfIsValid.current = true
 
             } else {
+                cpfIsValid.current = false
                 setCpfMessage("CPF inválido")
             }
+        }else if(cpf.length == 0){
+            cpfIsValid.current = true
+        }else{
+            cpfIsValid.current = false
         }
         setCpf(cpf)
     }
