@@ -151,9 +151,8 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
         })
     }
 
-    const excluirFornecedor = (idFornecedor, idPessoa ) => {
-        console.log("id fornecedor: ", idFornecedor)
-        console.log("id pessoa: ", idPessoa)
+    const excluirFornecedor = (item) => {
+        console.log("fornecedor no excluir: ", item)
         setIsLoading(true)
         getFornecedores("deleteEverythingFornecedorSite/" + idFornecedor + "/" + idPessoa).then((response) => {
             setIsLoading(false)
@@ -232,9 +231,9 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
                                             <MiniMenuAction item={item} />
                                             <MDBBtn color='danger' className='mt-2' onClick={() => setBasicModal(true)}>Excluir Fornecedor</MDBBtn>
                                         </td>
-                                        <Modal modalfunction={() => excluirFornecedor(item.pk_id, item.fk_fornecedor_pessoa)} basicModal={basicModal} setBasicModal={setBasicModal} title={modalTitle} body={modalBody} btntitle='Excluir' />
+                                        
                                     </tr>
-                                    
+                                    <Modal modalfunction={() => excluirFornecedor(item)} basicModal={basicModal} setBasicModal={setBasicModal} title={modalTitle} body={modalBody} btntitle='Excluir' />
                                 </>
 
                             )
