@@ -89,9 +89,9 @@ const EditarFornecedorNebulosa = () => {
     const cepValid = useRef(false)
     const cnpjInputRef = useRef(null)
     const cnpjRef = useRef(null)
-    const cnpjIsValidRef = useRef(!!fornecedor.cnpj)
+    const cnpjIsValidRef = useRef(true)
     const cpfRef = useRef(null)
-    const cpfIsValid = useRef(!!fornecedor.cpf)
+    const cpfIsValid = useRef(true)
     const subcategoriaSugestRef = useRef('')
     const errorMessageRef = useRef('')
 
@@ -244,7 +244,7 @@ const EditarFornecedorNebulosa = () => {
         setIsLoading(true)
         getCoordinates().then(async (data) => {
             let newValues
-            if (data.location && cepValid.current && 5 && perfilImage && galeria.length != 0 && imagemFundo && segmentos.length != 0 && categorias.length != 0 && subcategorias.length != 0 ) {
+            if (data.location && cepValid.current && 5 && perfilImage && galeria.length != 0 && imagemFundo && segmentos.length != 0 && categorias.length != 0 && subcategorias.length != 0 && (cpfIsValid.current || cnpjIsValidRef.current)) {
                 console.log("handle submit")
                 let dadosInteresse = { horarioFuncionamento, prazoProducao: prazoProducao + " " + prazoProducaoTipoRef.current, prazoEntrega: prazoEntrega + " " + prazoEntregaTipoRef.current, fazEntrega }
                 console.log("dados de interesse: ", dadosInteresse)

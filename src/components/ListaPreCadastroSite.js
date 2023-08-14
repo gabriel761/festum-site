@@ -17,6 +17,8 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
     const modalTitle = "Exluir produto"
     const modalBody = "Tem certeza que deseja excluir este produto?"
 
+    const fornecedorParaExcluir = useRef(null)
+
     useEffect(() => {
         firstFunctions()
     }, [statusConta, plano])
@@ -151,10 +153,10 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
         })
     }
 
-    const excluirFornecedor = (item) => {
-        console.log("fornecedor no excluir: ", item)
+    const excluirFornecedor = () => {
+        const fornecedor = fornecedorParaExcluir.current
         setIsLoading(true)
-        getFornecedores("deleteEverythingFornecedorSite/" + idFornecedor + "/" + idPessoa).then((response) => {
+        getFornecedores("deleteEverythingFornecedorSite/" + fornecedor.pk_id + "/" + fornecedor.fk_fornecedor_pessoa).then((response) => {
             setIsLoading(false)
             firstFunctions()
             setBasicModal(false)
@@ -163,6 +165,11 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
             setIsLoading(false)
             alert('erro: ', error.message)
         })
+    }
+
+    const handleExcluirBtn = (fornecedor) => {
+        fornecedorParaExcluir.current = fornecedor
+        setBasicModal(true)
     }
 
 
@@ -229,11 +236,11 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
                                         </td>
                                         <td>
                                             <MiniMenuAction item={item} />
-                                            <MDBBtn color='danger' className='mt-2' onClick={() => setBasicModal(true)}>Excluir Fornecedor</MDBBtn>
+                                            <MDBBtn color='danger' className='mt-2' onClick={() => handleExcluirBtn(item)}>Excluir Fornecedor</MDBBtn>
                                         </td>
                                         
                                     </tr>
-                                    <Modal modalfunction={() => excluirFornecedor(item)} basicModal={basicModal} setBasicModal={setBasicModal} title={modalTitle} body={modalBody} btntitle='Excluir' />
+                                    
                                 </>
 
                             )
@@ -243,7 +250,7 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
                                 <p>{messageRef.current}</p>
                             </div>
                         }
-
+                        <Modal modalfunction={() => excluirFornecedor()} basicModal={basicModal} setBasicModal={setBasicModal} title={modalTitle} body={modalBody} btntitle='Excluir' />
 
                     </MDBTableBody>
                 </MDBTable>
