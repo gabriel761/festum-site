@@ -36,8 +36,10 @@ export default function MiniMenuAction({ item }) {
     }
 
     const handleClick = (path, data) => {
+        if(path != "/excluir-fornecedor"){
+            navigate(path, { state: { fornecedor: data } })
+        }
         
-        navigate(path, {state:{fornecedor: data}})
     }
 
     arrayDisabledOptions = addDisabledOptions()

@@ -240,7 +240,7 @@ const EditarFornecedor = () => {
         setIsLoading(true)
         getCoordinates().then(async (data) => {
             let newValues
-            if (data.location && cepValid.current && 5 && perfilImage && galeria.length != 0 && imagemFundo && segmentos.length != 0 && categorias.length != 0 && subcategorias.length != 0 && ((cpfIsValid.current || cnpjIsValidRef.current) && !(cpfIsValid.current && cnpjIsValidRef.current)) && formaPagamento.length != 0 && horarioFuncionamento != 0 && descricaoLoja != 0) {
+            if (data.location && cepValid.current && 5 && perfilImage && galeria.length != 0 && imagemFundo && segmentos.length != 0 && categorias.length != 0 && subcategorias.length != 0 && (cpfIsValid.current || cnpjIsValidRef.current) && formaPagamento.length != 0 && horarioFuncionamento != 0 && descricaoLoja != 0) {
                 console.log("handle submit")
                 let dadosInteresse = { horarioFuncionamento, prazoProducao: prazoProducao + " " + prazoProducaoTipoRef.current, prazoEntrega: prazoEntrega + " " + prazoEntregaTipoRef.current, fazEntrega }
                 console.log("dados de interesse: ", dadosInteresse)

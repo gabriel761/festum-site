@@ -1,31 +1,40 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody, MDBSpinner, MDBContainer,MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem } from 'mdb-react-ui-kit';
+import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody, MDBSpinner, MDBContainer, MDBDropdown, MDBDropdownMenu, MDBDropdownToggle, MDBDropdownItem } from 'mdb-react-ui-kit';
 import { getFornecedores, tratarString } from '../api/getFornecedores';
 import { Link } from 'react-router-dom';
 import { apiIpag } from '../api/apiIpag';
 import MiniMenuAction from './MiniMenuActions';
+import Modal from './Modal';
 const ListaPreCadastroSite = ({ statusConta, plano }) => {
     const [data, setData] = useState([])
     const [isLoading, setIsLoading] = useState(false)
 
+    const [basicModal, setBasicModal] = useState(false);
     const dataRef = useRef([])
     const messageRef = useRef('')
     const colorsStatus = useRef('warning')
 
+    const modalTitle = "Exluir produto"
+    const modalBody = "Tem certeza que deseja excluir este produto?"
+
     useEffect(() => {
+        firstFunctions()
+    }, [statusConta, plano])
+
+    const firstFunctions = () => {
         setIsLoading(true)
         console.log("status conta vindo do route:", statusConta)
         console.log("plano vindo do route:", plano)
-        const reqUri = plano == "Pacote Nebulosa" ? 
-        "/fornecedoresSemDistanciaPreCadastroComPlano/" + plano : 
-        "/fornecedoresSemDistanciaPreCadastroComStatusEPlano/" + statusConta + "/" + plano
+        const reqUri = plano == "Pacote Nebulosa" ?
+            "/fornecedoresSemDistanciaPreCadastroComPlano/" + plano :
+            "/fornecedoresSemDistanciaPreCadastroComStatusEPlano/" + statusConta + "/" + plano
         getFornecedores(reqUri).then(async (result) => {
-            
+
             const fornecedoresPreCadastrados = result.data
             console.log("data fornecedores: ", fornecedoresPreCadastrados)
             messageRef.current = ''
             if (fornecedoresPreCadastrados.length == 0) {
-               
+
                 messageRef.current = "Não há fornecedores com esse status de conta"
                 dataRef.current = []
                 setIsLoading(false)
@@ -39,12 +48,12 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
                 setIsLoading(false)
             }
         }).catch((e) => {
-           
+
             messageRef.current = "Erro ao carregar fornecedores. Tente recarregar a página"
             console.log("erro ao carregar fornecedores", e)
             setIsLoading(false)
         })
-    }, [statusConta, plano])
+    }
 
     const chooseColorStatus = (statusConta) => {
         switch (statusConta) {
@@ -81,9 +90,9 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
         switch (item.status_da_conta) {
             case "Cadastro incompleto site":
                 return (
-                <Link to={{ pathname: "/cadastro-fornecedor", }} state={{ fornecedor: item }}>
-                    Completar Cadastro
-                </Link>
+                    <Link to={{ pathname: "/cadastro-fornecedor", }} state={{ fornecedor: item }}>
+                        Completar Cadastro
+                    </Link>
                 ); // amarelo
                 break;
             case "usuario ficticio":
@@ -92,7 +101,7 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
                     <Link to={{ pathname: "/adicionar-produto", }} state={{ fornecedor: item }}>
                         Adicionar Produto ao Fornecedor
                     </Link>
-                    );//verde
+                );//verde
                 break;
             default:
                 return "";
@@ -142,6 +151,20 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
         })
     }
 
+    const excluirFornecedor = (idFornecedor, idPessoa ) => {
+        console.log("id fornecedor: ", idFornecedor)
+        console.log("id pessoa: ", idPessoa)
+        setIsLoading(true)
+        getFornecedores("deleteEverythingFornecedorSite/" + idFornecedor + "/" + idPessoa).then((response) => {
+            setIsLoading(false)
+            firstFunctions()
+            setBasicModal(false)
+        }).catch((error) => {
+            console.log(error)
+            setIsLoading(false)
+            alert('erro: ', error.message)
+        })
+    }
 
 
     if (isLoading) {
@@ -158,10 +181,10 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
                 <MDBTable align='middle'>
                     <MDBTableHead>
                         <tr>
-                            {(statusConta == "Cadastro incompleto site" && plano =="Pacote Estrelar")?
-                             <th scope='col'>Nome Completo</th>
-                            :
-                             <th scope='col'>Nome da Loja</th>
+                            {(statusConta == "Cadastro incompleto site" && plano == "Pacote Estrelar") ?
+                                <th scope='col'>Nome Completo</th>
+                                :
+                                <th scope='col'>Nome da Loja</th>
                             }
                             <th scope='col'>E-mail</th>
                             <th scope='col'>Telefone</th>
@@ -174,41 +197,45 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
 
                         {dataRef.current.length != 0 ? dataRef.current.map((item) => {
                             return (
+                                <>
+                                    <tr key={item.pk_id}>
 
-                                <tr key={item.pk_id}>
+                                        <td>
+                                            {statusConta == "Cadastro incompleto site" && plano == "Pacote Estrelar" ?
+                                                <p className='text-muted mb-0' key={item.nome}>{item.nome} {item.sobrenome}</p>
+                                                :
+                                                <p className='text-muted mb-0' key={item.nome_loja}>{item.nome_loja}</p>
+                                            }
 
-                                    <td>
-                                        {statusConta == "Cadastro incompleto site" && plano =="Pacote Estrelar"?
-                                        <p className='text-muted mb-0' key={item.nome}>{item.nome} {item.sobrenome}</p>
-                                        :
-                                        <p className='text-muted mb-0' key={item.nome_loja}>{item.nome_loja}</p>
-                                        }
-                                        
-                                    </td>
-                                    <td>
-                                        <p className='text-muted mb-0'>{item.email}</p>
-                                    </td>
-                                    <td>
-                                        <p className='text-muted mb-0'>{item.telefone}</p>
-                                    </td>
-                                    <td>
+                                        </td>
+                                        <td>
+                                            <p className='text-muted mb-0'>{item.email}</p>
+                                        </td>
+                                        <td>
+                                            <p className='text-muted mb-0'>{item.telefone}</p>
+                                        </td>
+                                        <td>
 
-                                        <MDBBadge color={chooseColorStatusPagamento(item.status_pagamento)} pill>
-                                            {item.status_pagamento}
-                                        </MDBBadge>
+                                            <MDBBadge color={chooseColorStatusPagamento(item.status_pagamento)} pill>
+                                                {item.status_pagamento}
+                                            </MDBBadge>
 
-                                    </td>
-                                    <td>
+                                        </td>
+                                        <td>
 
-                                        <MDBBadge color={chooseColorStatus(item.status_da_conta)} pill>
-                                            {item.status_da_conta}
-                                        </MDBBadge>
+                                            <MDBBadge color={chooseColorStatus(item.status_da_conta)} pill>
+                                                {item.status_da_conta}
+                                            </MDBBadge>
 
-                                    </td>
-                                    <td>
-                                        <MiniMenuAction item={item}/>
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td>
+                                            <MiniMenuAction item={item} />
+                                            <MDBBtn color='danger' className='mt-2' onClick={() => setBasicModal(true)}>Excluir Fornecedor</MDBBtn>
+                                        </td>
+                                        <Modal modalfunction={() => excluirFornecedor(item.pk_id, item.fk_fornecedor_pessoa)} basicModal={basicModal} setBasicModal={setBasicModal} title={modalTitle} body={modalBody} btntitle='Excluir' />
+                                    </tr>
+                                    
+                                </>
 
                             )
 
@@ -221,6 +248,7 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
 
                     </MDBTableBody>
                 </MDBTable>
+
                 {/* <MDBBtn onClick={() => excluirAssinatura()}>Excluir assinatura</MDBBtn> */}
             </MDBContainer>
         );
