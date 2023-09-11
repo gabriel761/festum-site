@@ -19,7 +19,7 @@ const PagamentoNaoConfirmadoCard = () => {
             <MDBCardBody>
                 <MDBIcon className='ms-1 mb-4 d-flex justify-content-center' color='danger' icon='times' size='4x' />
                 <h3 className='text-center'>Ops! algo deu errado...</h3>
-                <p className='text-center'>Tente recarregar a página. Se o problema persistir, entre em contado com nosso suporte e informe o ocorrido.</p>
+                <p className='text-center'>Verifique se o cartão utilizado é válido</p>
 
             </MDBCardBody>
         </MDBCard>

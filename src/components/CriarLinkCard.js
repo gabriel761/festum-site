@@ -27,35 +27,35 @@ const CriarLinkCard = () => {
     const [isLoading, setIsLoading] = useState(false)
 
 
-useEffect(()=> {
-    consultarPlanos()
-},[])
+    useEffect(() => {
+        consultarPlanos()
+    }, [])
 
     const consultarPlanos = async () => {
-        try{
+        try {
             setIsLoading(true)
-        const planos = await apiIpag.request({
-            url: "/service/resources/plans",
-            method: "GET"
-        })
-        console.log("planos: ", planos.data.data)
-        setPlanos(planos.data.data)
-        setIsLoading(false)
-    }catch(e){
-        console.log("erro ao carregar planos: ", e)
-    }
+            const planos = await apiIpag.request({
+                url: "/service/resources/plans",
+                method: "GET"
+            })
+            console.log("planos: ", planos.data.data)
+            setPlanos(planos.data.data)
+            setIsLoading(false)
+        } catch (e) {
+            console.log("erro ao carregar planos: ", e)
+        }
     }
 
     const selectPlan = (item) => {
         console.log("plano: ", item)
         const selected = item.id
-        if(isSelected != selected){
+        if (isSelected != selected) {
             setIsSelected(selected)
             setLinkIpag(item.attributes.links.payment)
-        }else{
+        } else {
             setIsSelected("")
         }
-        
+
     }
 
     const handleClick = () => {
@@ -68,7 +68,7 @@ useEffect(()=> {
         }
     }
 
-    if(isLoading){
+    if (isLoading) {
         return (
             <div className='d-flex justify-content-center'>
                 <MDBSpinner role='status'>
@@ -76,7 +76,7 @@ useEffect(()=> {
                 </MDBSpinner>
             </div>
         )
-    }else{
+    } else {
         return (
             <MDBCard  >
                 <MDBCardBody>
@@ -84,14 +84,14 @@ useEffect(()=> {
                         {planos.map((item, index) => {
                             return (
                                 <MDBCol key={index} md={2}>
-                                    <MDBCard className={isSelected == item.id?'border border-primary':''}>
+                                    <MDBCard className={isSelected == item.id ? 'border border-primary' : ''}>
                                         <MDBCardBody>
                                             <MDBCardTitle>{item.attributes.name}</MDBCardTitle>
                                             <MDBCardText>
                                                 {item.attributes.description}
                                             </MDBCardText>
                                             <MDBCardText>
-                                               R$ {item.attributes.amount}
+                                                R$ {item.attributes.amount}
                                             </MDBCardText>
                                             <MDBBtn onClick={() => selectPlan(item)}>Selecionar</MDBBtn>
                                         </MDBCardBody>
@@ -99,18 +99,18 @@ useEffect(()=> {
                                 </MDBCol>
                             )
                         })}
-    
+
                     </MDBRow>
                     <MDBCardText>{linkCompleto}</MDBCardText>
                     <MDBBtn onClick={handleClick} >
                         Criar Link
                     </MDBBtn>
-                    
+
                 </MDBCardBody>
             </MDBCard>
         );
     }
-    
+
 }
 
 export default CriarLinkCard;
