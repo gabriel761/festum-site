@@ -28,7 +28,7 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
         console.log("status conta vindo do route:", statusConta)
         console.log("plano vindo do route:", plano)
         const reqUri = plano == "Pacote Nebulosa" ?
-            "/fornecedoresSemDistanciaPreCadastroComPlano/" + plano :
+            "/fornecedoresSemDistanciaPreCadastroComPlanoAsc/" + plano :
             "/fornecedoresSemDistanciaPreCadastroComStatusEPlano/" + statusConta + "/" + plano
         getFornecedores(reqUri).then(async (result) => {
 

@@ -27,7 +27,7 @@ export default function FormPreCadastroFirebase() {
             <MDBRow>
                 <MDBCol size="md"  >
                     {
-                        statusCode == 8?
+                        statusCode == 8 || statusCode == 5?
                             <FormPreCadstroFirebaseCard />
                             :
                             <PagamentoNaoConfirmadoCard />
