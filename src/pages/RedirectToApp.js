@@ -1,19 +1,17 @@
 import { useEffect } from "react";
 
 const RedirectToApp = () => {
-    var now = new Date().valueOf();
-    let notInstalled = false
-    setTimeout(function () {
-        if (notInstalled){
-            window.location = "https://play.google.com/store/apps/details?id=com.gabriel761.frontend";
-        };
-        
-    }, 500);
+    useEffect(() => {
+        window.location = "https://play.google.com/store/apps/details?id=com.gabriel761.frontend";
+    })
+    
     window.location = "festum://";
-    window.confirm = () => {
-        notInstalled = true
-    }
-    return null;
+    
+    return (
+        <div>
+            <h1>Redirecionando...</h1>
+        </div>
+    );
 }
  
 export default RedirectToApp;
