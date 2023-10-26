@@ -28,6 +28,7 @@ import EditarProdutoNebulosa from './pages/EditarProdutoNebulosa';
 import EditarFornecedor from './pages/EditarFornecedor';
 import AdicionarProdutoNebulosa from './pages/AdicionarProdutoNebulosa';
 import EditarProduto from './pages/EditarProduto';
+import RedirectToApp from './pages/RedirectToApp';
 
 
 
@@ -72,6 +73,7 @@ function App() {
             <Route path='/adicionar-produto-nebulosa' element={<AdicionarProdutoNebulosa />} />
             <Route path='/form-precadastro-firebase' element={<FormPreCadastroFirebase />} />
             <Route path='/deeplinking' element={<DeepLinking />} />
+            <Route path='/redirect-to-app' element={<RedirectToApp />} />
             <Route path='/criar-fornecedor-ficticio' element={<Private setSigned={setSigned} signed={signed} Item={CriarFornecedorFicticio} />} />
             <Route path='/form-precadastro-sempagamento' element={<Private setSigned={setSigned} signed={signed} Item={PreCadastroFormSemPagamento} />} />
             <Route path='/form-pacote-nebulosa' element={<Private setSigned={setSigned} signed={signed} Item={CriarFornecedorNebulosa} />} />
