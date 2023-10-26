@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
 const RedirectToApp = () => {
-    window.location.replace('festum://')
-    window.location.replace('https://play.google.com/store/apps/details?id=com.gabriel761.frontend')
+    setTimeout(function () { window.location = "https://play.google.com/store/apps/details?id=com.gabriel761.frontend"; }, 25);
+    window.location = "festum://";
     return null;
 }
  
