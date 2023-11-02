@@ -8,7 +8,8 @@ import {
     MDBRow,
     MDBCheckbox,
     MDBBtn,
-    MDBIcon
+    MDBIcon,
+    MDBContainer
 } from 'mdb-react-ui-kit';
 import EmailConfirmadoCard from '../components/EmailConfirmadoCard';
 import { useSearchParams } from 'react-router-dom';
