@@ -30,6 +30,7 @@ import AdicionarProdutoNebulosa from './pages/AdicionarProdutoNebulosa';
 import EditarProduto from './pages/EditarProduto';
 import RedirectToApp from './pages/RedirectToApp';
 import EmailConfirmadoApp from './pages/EmailConfirmadoApp';
+import SenhaConfirmadaApp from './components/SenhaConfirmada';
 
 
 
@@ -70,6 +71,7 @@ function App() {
             <Route path='/confirmacao-precadastro' element={<ConfirmacaoPreCadastro />} />
             <Route path='/email-confirmado' element={<EmailConfirmado />} />
             <Route path='/email-confirmado-app' element={<EmailConfirmadoApp />} />
+            <Route path='/senha-confirmada-app' element={<SenhaConfirmadaApp />} />
             <Route path='/pagamento-confirmado' element={<PagamentoConfirmado />} />
             <Route path='/adicionar-produto' element={<AdicionarProduto />} />
             <Route path='/adicionar-produto-nebulosa' element={<AdicionarProdutoNebulosa />} />
