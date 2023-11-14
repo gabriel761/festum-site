@@ -11,8 +11,8 @@ const CriarLink = () => {
         <MDBContainer className=''>
             <MDBRow>
                 <MDBCol size="md-12" >
-                    <PaginaInterditada/>
-                    {/* <CriarLinkCard /> */}
+                    {/* <PaginaInterditada/> */}
+                    <CriarLinkCard />
                 </MDBCol>
             </MDBRow>
         </MDBContainer>
