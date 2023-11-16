@@ -16,10 +16,8 @@ export default function FormPreCadastroFirebase() {
     const [searchParams] = useSearchParams();
     console.log("seach params: ",searchParams)
     const encryptedStatusCode = searchParams.get("code")
-    console.log("encrypted status code",encryptedStatusCode)
-    var bytes =  CryptoJS.AES.decrypt(encryptedStatusCode, 'Web033F1');
-    console.log(bytes)
-    var statusCode = bytes.toString(CryptoJS.enc.Utf8);
+    const index = encryptedStatusCode.indexOf('JdAo')
+    var statusCode = encryptedStatusCode.charAt(index + 4)
     console.log("status code: ", statusCode)
 
     
