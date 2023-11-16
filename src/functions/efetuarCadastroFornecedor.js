@@ -111,7 +111,7 @@ const uploadGaleryToFirebase = async (newValues) => {
 const sendToBackEnd = async (values) => {
   try {
     let result = await api.request({
-      url: "/updateFornecedor",
+      url: "/updateFornecedorCompletarContaSite",
       data: values,
       method: "POST"
     })
