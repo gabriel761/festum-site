@@ -73,12 +73,12 @@ const ListaPreCadastroSite = ({ statusConta, plano }) => {
     }
     const chooseColorStatusPagamento = (statusPagamento) => {
         switch (statusPagamento) {
-            case "recusado":
+            case "Recusado":
             case "DECLINED":
                 return "danger"; // amarelo
                 break;
             case "ativo":
-            case "aprovado e capturado":
+            case "Aprovado e Capturado":
             case "CAPTURED":
                 return "success";//verde
                 break;
