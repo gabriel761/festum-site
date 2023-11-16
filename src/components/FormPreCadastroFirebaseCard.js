@@ -62,15 +62,10 @@ const FormPreCadstroFirebaseCard = () => {
                 if (response.data.emailExists) {
 
                     auth.createUserWithEmailAndPassword(values.email, values.senha).then(() => {
-                        auth.currentUser.sendEmailVerification({
-                            handleCodeInApp: false,
-                            url: window.location.origin + "/email-confirmado"
-
-                        }).then(() => {
+                        getFornecedores("/sendEmailVerificationSite/"+values.email).then(() => {
                             updateFirebaseId(auth.currentUser.uid, auth.currentUser.email).then(() => {
                                 setMessage('')
                                 setIsLoading(false)
-                                
                                 navigate('/confirmacao-precadastro');
                             }).catch((e) => {
                                 setIsLoading(false)

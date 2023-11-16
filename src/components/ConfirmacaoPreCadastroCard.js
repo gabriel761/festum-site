@@ -36,10 +36,7 @@ const ConfirmacaoPreCadastroCard = () => {
                     let token = await auth.currentUser.getIdToken()
                     getFornecedores("/updateEmail/" + email,token ).then((result) => {
                         console.log(result)
-                        auth.currentUser.sendEmailVerification({
-                            handleCodeInApp: true,
-                            url: window.location.origin + "/email-confirmado"
-                          }).then((result) => {
+                        getFornecedores("/sendEmailVerificationSite/" + email).then((result) => {
                             isErroColor.current = false
                             setMessage("E-mail reenviado com sucesso!")
                             setIsLoading(false)
