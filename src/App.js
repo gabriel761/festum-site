@@ -31,6 +31,7 @@ import EditarProduto from './pages/EditarProduto';
 import RedirectToApp from './pages/RedirectToApp';
 import EmailConfirmadoApp from './pages/EmailConfirmadoApp';
 import SenhaConfirmadaApp from './components/SenhaConfirmada';
+import PagarAssinaturaFornecedor from './pages/PagarAssinaturaFornecedor';
 
 
 
@@ -86,6 +87,7 @@ function App() {
             <Route path='/editar-fornecedor-estrelar' element={<Private setSigned={setSigned} signed={signed} Item={EditarFornecedor} />} />
             <Route path='/editar-produto-nebulosa' element={<Private setSigned={setSigned} signed={signed} Item={EditarProdutoNebulosa} />} />
             <Route path='/editar-produto' element={<Private setSigned={setSigned} signed={signed} Item={EditarProduto} />} />
+            <Route path='/pagarAssinaturaFornecedor' element={<PagarAssinaturaFornecedor/>}/>
           </Routes>
         </Router>
       </UserContext.Provider>
