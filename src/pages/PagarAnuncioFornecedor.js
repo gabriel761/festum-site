@@ -267,6 +267,7 @@ const PagarAnuncioFornecedor = () => {
             }
             setIsLoadingPayment(false)
         } catch (error) {
+            console.log(error)
             console.log('erro ao tentar realizar o pagamento: ', error.response.data)
             // protocolo de falha no pagamento
             if (!!blockPagamentoObj) {
