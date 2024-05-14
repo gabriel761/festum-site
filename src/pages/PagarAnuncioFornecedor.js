@@ -11,6 +11,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import CryptoJS from 'crypto-js';
 import { decode } from "base-64"
 import { traduzirData } from "../functions/traduzirData";
+import api from "../api/api";
 
 const PagarAnuncioFornecedor = () => {
     //console.log("user from context: ", userFromContext)
@@ -268,7 +269,7 @@ const PagarAnuncioFornecedor = () => {
             setIsLoadingPayment(false)
         } catch (error) {
             console.log(error)
-            console.log('erro ao tentar realizar o pagamento: ', error.response.data)
+            //console.log('erro ao tentar realizar o pagamento: ', error.response.data)
             // protocolo de falha no pagamento
             if (!!blockPagamentoObj) {
                 if (verificarSeTempoDeBloqueioAcabou(blockPagamentoObj.date)) {
