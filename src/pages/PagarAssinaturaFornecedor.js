@@ -467,7 +467,7 @@ const PagarAssinaturaFornecedor = () => {
                                 <MDBInput value={cvv} onChange={(e) => onChangeCvv(e.target.value)} label="CVV" />
                             </MDBValidationItem>
                             <div style={{ color: '#DC4C64' }}>{message}</div>
-                            <MDBBtn>Comprar</MDBBtn>
+                            <MDBBtn onClick={submit}>Comprar</MDBBtn>
                         </MDBValidation>
                     </MDBCard>
                 </MDBCol>
