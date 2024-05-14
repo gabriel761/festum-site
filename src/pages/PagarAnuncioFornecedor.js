@@ -54,8 +54,6 @@ const PagarAnuncioFornecedor = () => {
     const planoIpag = useRef(null)
     const submitValuesRef = useRef(submitValues)
 
-    console.log(submitValues)
-
     useEffect(() => {
         firstFunctions()
     }, [])
@@ -92,7 +90,6 @@ const PagarAnuncioFornecedor = () => {
         text = replaceAll(text)
         if (text.length == 16) {
             nrCartaoIsValidRef.current = !!testarCC(text)
-            console.log("numero do cartao is valid: ", nrCartaoIsValidRef.current)
         }
     }
     const onChangeName = (text) => {
@@ -268,8 +265,7 @@ const PagarAnuncioFornecedor = () => {
             }
             setIsLoadingPayment(false)
         } catch (error) {
-            console.log(error)
-            //console.log('erro ao tentar realizar o pagamento: ', error.response.data)
+            console.log('erro ao tentar realizar o pagamento: ', error.response.data)
             // protocolo de falha no pagamento
             if (!!blockPagamentoObj) {
                 if (verificarSeTempoDeBloqueioAcabou(blockPagamentoObj.date)) {
@@ -313,7 +309,6 @@ const PagarAnuncioFornecedor = () => {
     }
 
     const sendToBackEnd = (values) => {
-        console.log("values before sending:", values)
         api.request({
             url: "/addAnuncio",
             data: values,
@@ -321,7 +316,6 @@ const PagarAnuncioFornecedor = () => {
             headers: { Authorization: "Bearer " + accessTokenRef.current }
         }).then((result) => {
             setIsloading(false)
-            console.log("resposta do servidor: ", result)
             if (Object.keys(result.data).length == 0) {
                 setMessage("Sem resposta do servidor")
             } else {
@@ -428,11 +422,11 @@ const PagarAnuncioFornecedor = () => {
                     <MDBCard style={{ padding: 20 }}>
                         <MDBRow>
                             <MDBCol>
-                                <img className="img-thumbnail" src={submitValuesRef.current?.imagem}/>
+                                <img className="img-thumbnail" src={submitValuesRef.current?.imagem} />
                             </MDBCol>
                             <MDBCol>
                                 <h3>{submitValuesRef.current?.titulo}</h3>
-                                <p style={{fontSize: 14}}>Data de início: {traduzirData(submitValuesRef.current?.dataInicio)}</p>
+                                <p style={{ fontSize: 14 }}>Data de início: {traduzirData(submitValuesRef.current?.dataInicio)}</p>
                                 <p style={{ fontSize: 14 }}>Data final: {traduzirData(submitValuesRef.current?.dataFinal)}</p>
                                 <h5>Duração: {submitValuesRef.current?.plano} dias</h5>
                             </MDBCol>
