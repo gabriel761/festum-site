@@ -244,7 +244,7 @@ const PagarAssinaturaFornecedor = () => {
         try {
             setIsLoadingPayment(true)
             const paymentObj = {
-                "amount": "1.00",
+                "amount": "1.01",
                 "callback_url": "https://festum-heroku-production.up.railway.app/webhookPlanoEstrelarIpag",
                 "payment": {
                     "type": "card",
