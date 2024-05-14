@@ -295,7 +295,7 @@ const PagarAssinaturaFornecedor = () => {
                 if (!!blockPagamentoObj) {
                     await removeData('pagamento-bloqueado')
                 }
-                await updateStatusPagamentoFornecedor({ status_pagamento: "Aprovado e Capturado" }, accessTokenRef.current)
+                await updateStatusPagamentoFornecedor({ status_pagamento: "Aprovado e Capturado", fk_fornecedor_pessoa: fornecedorFromDBRef.current.fk_fornecedor_pessoa }, accessTokenRef.current)
                 efetuarPagamento(cartaoTokenizado, assinaturaDB, assinaturaIpag)
             } else {
                 // protocolo de falha no pagamento
@@ -311,7 +311,7 @@ const PagarAssinaturaFornecedor = () => {
                 }
                 const statusPagamento = mensagemStatusContaIpag(responseIpag.data.attributes.status.code)
                 alert("Erro no pagamento: Pagamento " + statusPagamento)
-                await updateStatusPagamentoFornecedor({ status_pagamento: statusPagamento }, accessTokenRef.current)
+                await updateStatusPagamentoFornecedor({ status_pagamento: statusPagamento, fk_fornecedor_pessoa: fornecedorFromDBRef.current.fk_fornecedor_pessoa }, accessTokenRef.current)
             }
             setIsLoadingPayment(false)
         } catch (error) {
