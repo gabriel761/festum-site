@@ -1,4 +1,4 @@
-import { MDBBtn, MDBCard, MDBCardTitle, MDBCol, MDBContainer, MDBInput, MDBRow, MDBSpinner, MDBValidation, MDBValidationItem } from "mdb-react-ui-kit";
+import { MDBBtn, MDBCard, MDBCardBody, MDBCardTitle, MDBCol, MDBContainer, MDBIcon, MDBInput, MDBRow, MDBSpinner, MDBValidation, MDBValidationItem } from "mdb-react-ui-kit";
 import { useEffect, useRef, useState, useContext } from 'react';
 import { replaceAll, onlyLettersAndSpaces, dateMask } from '../functions/uitl';
 import { checkDate, testarCC, formatDate } from '../functions/validarCartao';
@@ -16,6 +16,7 @@ const PagarAssinaturaFornecedor = () => {
     const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
     const [isLoadingPayment, setIsLoadingPayment] = useState(false)
     const [isLoadingAssinatura, setIsLoadingAssinatura] = useState(false)
+    const [pagamentoRealizado, setPagamentoRealizado] = useState(false)
     const [message, setMessage] = useState('')
     const [messageDate, setMessageDate] = useState('')
     const [messageDateNascimento, setMessageDateNascimento] = useState('')
@@ -68,6 +69,7 @@ const PagarAssinaturaFornecedor = () => {
 
     const firstFunctions = async () => {
         let endereco = await getEnderecoFromCep(fornecedorFromDBRef.current.cep)
+      
         setIsloading(true)
         try{
             planoIpag.current = await ipagRequestGetPlano(planId);
@@ -229,6 +231,7 @@ const PagarAssinaturaFornecedor = () => {
 
             }
             setIsLoadingAssinatura(false)
+            setPagamentoRealizado(true)
         } catch (error) {
             setIsLoadingAssinatura(false)
             console.log(error)
@@ -429,6 +432,21 @@ const PagarAssinaturaFornecedor = () => {
             <div className="d-flex justify-content-center flex-column">
                 <MDBSpinner className="align-self-center"  size="lg" />
                 <p style={{ fontSize: 16, textAlign: "center", marginTop:20 }}>Verificando assinatura...</p>
+            </div>
+        )
+    }
+
+    if (pagamentoRealizado) {
+        return (
+            <div className="d-flex justify-content-center flex-column">
+                <MDBCard >
+                    <MDBCardBody>
+                        <MDBIcon className='ms-1 mb-4 d-flex justify-content-center' color='primary' icon='check' size='4x' />
+                        <h3 className='text-center'>Pagamento Confirmado!</h3>
+                        <p className='text-center'>Agora é só voltar para o aplicativo e finalizar seu cadastro!</p>
+
+                    </MDBCardBody>
+                </MDBCard>
             </div>
         )
     }
