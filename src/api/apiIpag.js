@@ -1,4 +1,4 @@
-// import axios from "axios"
+import axios from "axios"
 // export const apiIpag = axios.create({
 //     baseURL: 'https://api.ipag.com.br',
 //     timeout: 3000,
