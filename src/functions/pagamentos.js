@@ -139,86 +139,34 @@ export const ipagRequest = async (fornecedor, endereco, cartao, planId) => {
 
 
 export const ipagRequestCriarClienteEAssinaturaUsandoToken = async (cartao, endereco, fornecedor, planId, formatedDate) => {
+    const data = {cartao, endereco, fornecedor, planId, formatedDate}
     try {
-        console.log("cartao criar cliente e assinatura usando token: ", cartao)
-        console.log("profile id: ", planId)
-    const responseCliente = await apiIpag.request({
-        url: "/service/resources/customers",
+        
+    const responseBackEnd = await api.request({
+        url: "/ipagRequestCriarClienteEAssinaturaUsandoToken",
         method: "POST",
-        data: {
-            "name": `${fornecedor.nome} ${fornecedor.sobrenome}`,
-            "cpf_cnpj": fornecedor.cnpj != null ? fornecedor.cnpj : fornecedor.cpf,
-            "email": fornecedor.email,
-            "phone": fornecedor.telefone,
-            "address": {
-                "street": endereco.rua,
-                "number": fornecedor.numero,
-                "district": endereco.bairro,
-                "complement": fornecedor.complemento,
-                "city": endereco.cidade,
-                "state": endereco.uf,
-                "zipcode": fornecedor.cep
-            }
-        }
-    }).catch((e) => { console.log("Erro ao criar cliente: ",e.response.data); throw (new Error("Erro ao criar cliente: " + e.message)) })
-        const number = Math.floor(Math.random() * 1000)
-    const responseAssinatura = await apiIpag.request({
-        url: "/service/resources/subscriptions",
-        method: "POST",
-        data: {
-            "is_active": true,
-            "profile_id": fornecedor.email + "-" + planId +"-"+number,
-            "plan_id": planId,
-            "customer_id": responseCliente.data.id,
-            "starting_date": formatedDate,
-            // "closing_date": "0000-00-00",
-            "callback_url": "https://festum-heroku-production.up.railway.app/webhookPlanoEstrelarIpag",
-            "creditcard_token": cartao.token
-        }
-    }).catch((e) => { throw (e.response.data.message) })
-    return {objCliente: responseCliente.data , objAssinatura: responseAssinatura.data};
+        data: data
+        
+    }).catch((e) => { console.log("Erro ao criar cliente: ",e.message); throw (new Error("Erro ao criar cliente: " + e.message)) })
+    
+    return {objCliente: responseBackEnd.data.objCliente , objAssinatura: responseBackEnd.data.objAssinatura};
     } catch (error) {
         throw(error)
     }
 }
 
 export const ipagRequestTokenizarCartao = async (cartao, fornecedor, endereco) => {
-    console.log("fornecedor from db: ", fornecedor.cnpj != null ? fornecedor.cnpj : fornecedor.cpf)
-    console.log("cartao: ", cartao)
-    console.log("endereco: ", endereco)
+    const data = {cartao, fornecedor, endereco}
     try {
-        const responseTokenCartao = await apiIpag.request({
-            url: "/service/resources/card_tokens",
+        const responseTokenCartao = await api.request({
+            url: "/ipagRequestTokenizarCartao",
             method: "POST",
-            data: {
-                "card": {
-                    "holderName": cartao.nome,
-                    "number": cartao.nrCartao,
-                    "expiryMonth": cartao.validadeMonth,
-                    "expiryYear": cartao.validadeYear + '',
-                    "cvv": cartao.cvv
-                },
-                "holder": {
-                    "name": `${fornecedor.nome} ${fornecedor.sobrenome}`,
-                    "cpfCnpj": fornecedor.cnpj != null ? fornecedor.cnpj : fornecedor.cpf,
-                    "mobilePhone": fornecedor.telefone,
-                    "birthdate": cartao.nascimento,
-                    "address": {
-                        "street": endereco.rua,
-                        "number": fornecedor.numero,
-                        "district": endereco.bairro,
-                        "complement": fornecedor.complemento,
-                        "city": endereco.cidade,
-                        "state": endereco.uf,
-                        "zipcode": fornecedor.cep
-                    }
-                }
-            }
+            data: data
         })
     return responseTokenCartao.data
     } catch (e) {
-        console.log("erro tokenizando cartao: ",e.response.data.message)
-        throw (e.response.data.message)
+        console.log("erro tokenizando cartao: ",e.message)
+        throw (e.message)
     }
 }
 
@@ -270,16 +218,11 @@ export const ipagRequestChecarSeAssinaturaExisteEmail = async (email) => {
 }
 
 export const ipagRequestAlterarCartaoDaAssinatura = async (idAssinatura, token, idPlano) => {
-    console.log("id assinatura: ", idAssinatura)
-    console.log("id plano: ", idPlano)
-    console.log("token: ", token)
-    const response = await apiIpag.request({
-        url: "/service/resources/subscriptions?id=" + idAssinatura,
+    const data = {idAssinatura, token, idPlano}
+    const response = await api.request({
+        url: "/ipagRequestAlterarCartaoDaAssinatura",
         method: "PUT",
-        data: {
-            "creditcard_token": token,
-            "plan_id": idPlano
-        }
+        data: data
     })
     return response.data
 }
@@ -309,8 +252,8 @@ export const ipagRequestDesativarAssinatura = async (idAssinatura) => {
 }
 
 export const ipagRequestAtivarAssinatura = async (idAssinatura) => {
-    const response = await apiIpag.request({
-        url: `/service/resources/subscriptions?id=${idAssinatura}`,
+    const response = await api.request({
+        url: `/ipagRequestAtivarAssinatura/${idAssinatura}`,
         method: "PUT",
         data: { "is_active": true }
     })

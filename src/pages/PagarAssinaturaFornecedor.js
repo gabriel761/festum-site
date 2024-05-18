@@ -9,6 +9,8 @@ import { getData, removeData, storeData } from '../storage/asyncStorage';
 import { formatReal } from "../functions/converterPreco";
 import { useLocation, useParams } from 'react-router-dom';
 import CryptoJS from 'crypto-js';
+import { dateFormatYearFirst } from "../functions/dateFormat";
+import { decode } from "base-64"
 
 const PagarAssinaturaFornecedor = () => {
     //console.log("user from context: ", userFromContext)
@@ -30,10 +32,8 @@ const PagarAssinaturaFornecedor = () => {
 
     const location = useLocation();
     const params = new URLSearchParams(location.search);
-    const { planId, fornecedor, tokenFirebase } = JSON.parse(params.get('data')) ;
-    // const token = CryptoJS.AES.encrypt(routeData, "Web033F1")
-    // const bytes =  CryptoJS.AES.decrypt(token, "Web033F1")
-    // const forJson = bytes.toString(CryptoJS.enc.Utf8)
+    const { planId, fornecedor, tokenFirebase } = JSON.parse(decode(params.get('data'))) ;
+
     console.log(planId  )
     // 
     // console.log(planId)
@@ -361,7 +361,7 @@ const PagarAssinaturaFornecedor = () => {
     const submit = async () => {
         if (nrCartaoIsValidRef.current && nomeIsValidRef.current && validadeIsValidRef.current && cvvIsValidRef.current && nascimentoIsValid.current) {
 
-            const cartao = { nrCartao: nrCartao, nome: nome, validadeMonth: validadeMonth, validadeYear: validadeYear, cvv: cvv, nascimento: nascimento, formatedDate: formatedDateRef.current }
+            const cartao = { nrCartao: nrCartao, nome: nome, validadeMonth: validadeMonth, validadeYear: validadeYear, cvv: cvv, nascimento: dateFormatYearFirst(nascimento) , formatedDate: formatedDateRef.current }
 
             setIsLoadingSubmit(true)
             setMessage('')
