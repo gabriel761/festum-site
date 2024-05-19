@@ -432,7 +432,7 @@ const PagarAnuncioFornecedor = () => {
                             </MDBCol>
                         </MDBRow>
                         <hr className="hr mb-6" />
-                        <MDBValidation className="row g-3 ">
+                        <div className="row g-3 ">
                             <MDBValidationItem className="col-12">
                                 <MDBInput value={nrCartao} onChange={(e) => onChangeNrCartao(e.target.value)} label="Numero do cartão" />
                             </MDBValidationItem>
@@ -452,7 +452,7 @@ const PagarAnuncioFornecedor = () => {
                             </MDBValidationItem>
                             <div style={{ color: '#DC4C64' }}>{message}</div>
                             <MDBBtn onClick={submit}>Comprar</MDBBtn>
-                        </MDBValidation>
+                        </div>
                     </MDBCard>
                 </MDBCol>
             </MDBRow>
