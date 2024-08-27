@@ -250,7 +250,7 @@ const PagarAssinaturaFornecedor = () => {
                     "type": "card",
                     "method": cartaoTokenizado.attributes.card.brand,
                     "installments": "1",
-                    "capture": false,
+                    "capture": true,
                     "card": {
                         "holder": nome,
                         "number": nrCartao,

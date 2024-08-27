@@ -193,18 +193,18 @@ const PagarAnuncioFornecedor = () => {
     }
 
 
-    const pagamentoIpag = async (cartaoTokenizado, blockPagamentoObj) => {
-
+    const pagamentoIpag = async (blockPagamentoObj) => {
+        console.log(submitValuesRef.current)
         try {
             setIsLoadingPayment(true)
             const paymentObj = {
-                "amount": "1.00",
+                "amount": submitValuesRef.current.preco_anuncio ,
                 "callback_url": "https://festum-heroku-production.up.railway.app/webhookPlanoEstrelarIpag",
                 "payment": {
                     "type": "card",
-                    "method": cartaoTokenizado.attributes.card.brand,
+                    "method": "mastercard",
                     "installments": "1",
-                    "capture": false,
+                    "capture": true,
                     "card": {
                         "holder": nome,
                         "number": nrCartao,
@@ -237,15 +237,15 @@ const PagarAnuncioFornecedor = () => {
 
             })
             if (responseIpag.data.attributes.status.code == 5 || responseIpag.data.attributes.status.code == 8) {
-                const responseIpagCancelar = await apiIpag.request({
-                    url: "/service/cancel?id=" + responseIpag.data.id,
-                    method: 'POST',
-                })
+                // const responseIpagCancelar = await apiIpag.request({
+                //     url: "/service/cancel?id=" + responseIpag.data.id,
+                //     method: 'POST',
+                // })
 
                 if (!!blockPagamentoObj) {
                     await removeData('pagamento-bloqueado')
                 }
-                await updateStatusPagamentoFornecedor({ status_pagamento: "Aprovado e Capturado", fk_fornecedor_pessoa: fornecedorFromDBRef.current.fk_fornecedor_pessoa }, accessTokenRef.current)
+                //await updateStatusPagamentoFornecedor({ status_pagamento: "Aprovado e Capturado", fk_fornecedor_pessoa: fornecedorFromDBRef.current.fk_fornecedor_pessoa }, accessTokenRef.current)
                 sendToBackEnd(submitValuesRef.current)
             } else {
                 // protocolo de falha no pagamento
@@ -265,7 +265,7 @@ const PagarAnuncioFornecedor = () => {
             }
             setIsLoadingPayment(false)
         } catch (error) {
-            console.log('erro ao tentar realizar o pagamento: ', error.response.data)
+            console.log( error.response.data)
             // protocolo de falha no pagamento
             if (!!blockPagamentoObj) {
                 if (verificarSeTempoDeBloqueioAcabou(blockPagamentoObj.date)) {
@@ -339,23 +339,23 @@ const PagarAnuncioFornecedor = () => {
 
             setIsLoadingSubmit(true)
             setMessage('')
-            let cartaoTokenizado = await getCartao(cartao.nrCartao, fornecedorFromDBRef.current.pk_id)
-            if (!cartaoTokenizado) {
+            // let cartaoTokenizado = await getCartao(cartao.nrCartao, fornecedorFromDBRef.current.pk_id)
+            // if (!cartaoTokenizado) {
 
-                cartaoTokenizado = await ipagRequestTokenizarCartao(cartao, fornecedorFromDBRef.current, enderecoFromCepRef.current).catch((e) => { throw ("tokenizar cartão: " + e) })
-                cartaoTokenizado = { ...cartaoTokenizado, fromIpag: true }
-            } else {
-                cartaoTokenizado = JSON.parse(cartaoTokenizado.dados_cartao)
-            }
+            //     cartaoTokenizado = await ipagRequestTokenizarCartao(cartao, fornecedorFromDBRef.current, enderecoFromCepRef.current).catch((e) => { throw ("tokenizar cartão: " + e) })
+            //     cartaoTokenizado = { ...cartaoTokenizado, fromIpag: true }
+            // } else {
+            //     cartaoTokenizado = JSON.parse(cartaoTokenizado.dados_cartao)
+            // }
             setIsLoadingSubmit(false)
             let blockPagamento = JSON.parse(await getData('pagamento-bloqueado'))
 
             if (!blockPagamento) {
-                pagamentoIpag(cartaoTokenizado, blockPagamento)
+                pagamentoIpag( blockPagamento)
             } else if (verificarSeTempoDeBloqueioAcabou(blockPagamento.date)) {
-                pagamentoIpag(cartaoTokenizado, blockPagamento)
+                pagamentoIpag( blockPagamento)
             } else if (blockPagamento.trys < 2) {
-                pagamentoIpag(cartaoTokenizado, blockPagamento)
+                pagamentoIpag( blockPagamento)
             } else {
                 alert("Pagamento temporariamente bloqueado por excesso de falhas consecutivas. Tente novamente em 1 hora")
             }
