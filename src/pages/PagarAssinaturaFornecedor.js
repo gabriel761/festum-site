@@ -49,6 +49,7 @@ const PagarAssinaturaFornecedor = () => {
     const validadeIsValidRef = useRef(false)
     const cvvIsValidRef = useRef(false)
     const accessTokenRef =  useRef(tokenFirebase)
+    const bandeiraRef = useRef(null)
     const planoIpag = useRef(null)
 
     useEffect(() => {
@@ -64,7 +65,7 @@ const PagarAssinaturaFornecedor = () => {
         let yourDate = new Date()
         yourDate = yourDate.setDate(yourDate.getDate() + 60);
         yourDate = new Date(yourDate)
-        formatedDateRef.current = `${yourDate.getFullYear()}-${yourDate.getMonth() + 1 > 10 ? yourDate.getMonth() + 1 : `0${yourDate.getMonth() + 1}`}-${yourDate.getDate() >= 10 ? yourDate.getDate() : `0${yourDate.getDate()}`}`
+        formatedDateRef.current = `${yourDate.getFullYear()}-${yourDate.getMonth() + 1 >= 10 ? yourDate.getMonth() + 1 : `0${yourDate.getMonth() + 1}`}-${yourDate.getDate() >= 10 ? yourDate.getDate() : `0${yourDate.getDate()}`}`
     }
 
     const firstFunctions = async () => {
@@ -101,8 +102,8 @@ const PagarAssinaturaFornecedor = () => {
 
         text = replaceAll(text)
         if (text.length == 16) {
-            nrCartaoIsValidRef.current = !!testarCC(text)
-            console.log("numero do cartao is valid: ", nrCartaoIsValidRef.current)
+            bandeiraRef.current = testarCC(text)
+            nrCartaoIsValidRef.current = !!bandeiraRef.current
         }
     }
     const onChangeName = (text) => {
@@ -222,7 +223,7 @@ const PagarAssinaturaFornecedor = () => {
                 }
             } else {
 
-                const { objCliente, objAssinatura } = await ipagRequestCriarClienteEAssinaturaUsandoToken(cartaoTokenizado, enderecoFromCepRef.current, fornecedorFromDBRef.current, planId, formatedDateRef.current).catch((e) => { alert('Erro no processo de pagamento: ' + e); setIsLoadingSubmit(false); })
+                const { objAssinatura } = await ipagRequestCriarClienteEAssinaturaUsandoToken(cartaoTokenizado, enderecoFromCepRef.current, fornecedorFromDBRef.current, planId, formatedDateRef.current).catch((e) => { alert('Erro no processo de pagamento: ' + e); setIsLoadingSubmit(false); })
                 await sendAssinaturaToBackEnd(objAssinatura, fornecedorFromDBRef.current)
                 if (!!cartaoTokenizado?.fromIpag) {
                     cartaoTokenizado.fromIpag = false
@@ -466,7 +467,7 @@ const PagarAssinaturaFornecedor = () => {
 
                         </MDBRow>
                         <hr className="hr mb-6" />
-                        <div className="row g-3 ">
+                        <div className="row g-3 d-flex">
                             <MDBValidationItem className="col-12">
                                 <MDBInput value={nrCartao} onChange={(e) => onChangeNrCartao(e.target.value)} label="Numero do cartão" />
                             </MDBValidationItem>
@@ -485,7 +486,7 @@ const PagarAssinaturaFornecedor = () => {
                                 <MDBInput value={cvv} onChange={(e) => onChangeCvv(e.target.value)} label="CVV" />
                             </MDBValidationItem>
                             <div style={{ color: '#DC4C64' }}>{message}</div>
-                            <MDBBtn onClick={submit}>Comprar</MDBBtn>
+                            {isLoadingSubmit ? <MDBSpinner className="align-self-center" size="lg" /> : <MDBBtn onClick={submit}>Comprar</MDBBtn>}  
                         </div>
                     </MDBCard>
                 </MDBCol>

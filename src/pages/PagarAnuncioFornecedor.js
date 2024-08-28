@@ -52,6 +52,7 @@ const PagarAnuncioFornecedor = () => {
     const cvvIsValidRef = useRef(false)
     const accessTokenRef = useRef(null)
     const planoIpag = useRef(null)
+    const bandeiraRef = useRef(null)
     const submitValuesRef = useRef(submitValues)
 
     useEffect(() => {
@@ -69,7 +70,7 @@ const PagarAnuncioFornecedor = () => {
             ...endereco,
             cep: fornecedorFromDBRef.current?.cep,
             numero: fornecedorFromDBRef.current?.numero,
-            complemento: formatedDateRef.current?.complemento
+            complemento: fornecedorFromDBRef.current?.complemento
         }
         enderecoFromCepRef.current = endereco
         setIsloading(false)
@@ -89,7 +90,8 @@ const PagarAnuncioFornecedor = () => {
 
         text = replaceAll(text)
         if (text.length == 16) {
-            nrCartaoIsValidRef.current = !!testarCC(text)
+            bandeiraRef.current = testarCC(text)
+            nrCartaoIsValidRef.current = !!bandeiraRef.current
         }
     }
     const onChangeName = (text) => {
@@ -193,16 +195,15 @@ const PagarAnuncioFornecedor = () => {
     }
 
 
-    const pagamentoIpag = async (blockPagamentoObj) => {
-        console.log(submitValuesRef.current)
+    const pagamentoIpag = async (cartaoTokenizado,blockPagamentoObj) => {
         try {
             setIsLoadingPayment(true)
             const paymentObj = {
-                "amount": submitValuesRef.current.preco_anuncio ,
+                "amount": 1.01/*submitValuesRef.current.preco_anuncio*/ ,
                 "callback_url": "https://festum-heroku-production.up.railway.app/webhookPlanoEstrelarIpag",
                 "payment": {
                     "type": "card",
-                    "method": "mastercard",
+                    "method": cartaoTokenizado.attributes.card.brand,
                     "installments": "1",
                     "capture": true,
                     "card": {
@@ -236,6 +237,8 @@ const PagarAnuncioFornecedor = () => {
                 data: paymentObj
 
             })
+
+            console.log("status code pagamento:", responseIpag.data.attributes.status.code)
             if (responseIpag.data.attributes.status.code == 5 || responseIpag.data.attributes.status.code == 8) {
                 // const responseIpagCancelar = await apiIpag.request({
                 //     url: "/service/cancel?id=" + responseIpag.data.id,
@@ -335,27 +338,27 @@ const PagarAnuncioFornecedor = () => {
     const submit = async () => {
         if (nrCartaoIsValidRef.current && nomeIsValidRef.current && validadeIsValidRef.current && cvvIsValidRef.current && nascimentoIsValid.current) {
 
-            const cartao = { nrCartao: nrCartao, nome: nome, validadeMonth: validadeMonth, validadeYear: validadeYear, cvv: cvv, nascimento: nascimento, formatedDate: formatedDateRef.current }
+            const cartao = { nrCartao: nrCartao, nome: nome, validadeMonth: validadeMonth, validadeYear: validadeYear, cvv: cvv, nascimento: formatDate(nascimento), formatedDate: formatedDateRef.current }
 
             setIsLoadingSubmit(true)
             setMessage('')
-            // let cartaoTokenizado = await getCartao(cartao.nrCartao, fornecedorFromDBRef.current.pk_id)
-            // if (!cartaoTokenizado) {
+            let cartaoTokenizado = await getCartao(cartao.nrCartao, fornecedorFromDBRef.current.pk_id)
+            if (!cartaoTokenizado) {
 
-            //     cartaoTokenizado = await ipagRequestTokenizarCartao(cartao, fornecedorFromDBRef.current, enderecoFromCepRef.current).catch((e) => { throw ("tokenizar cartão: " + e) })
-            //     cartaoTokenizado = { ...cartaoTokenizado, fromIpag: true }
-            // } else {
-            //     cartaoTokenizado = JSON.parse(cartaoTokenizado.dados_cartao)
-            // }
+                cartaoTokenizado = await ipagRequestTokenizarCartao(cartao, fornecedorFromDBRef.current, enderecoFromCepRef.current).catch((e) => { throw ("tokenizar cartão: " + e) })
+                cartaoTokenizado = { ...cartaoTokenizado, fromIpag: true }
+            } else {
+                cartaoTokenizado = JSON.parse(cartaoTokenizado.dados_cartao)
+            }
             setIsLoadingSubmit(false)
             let blockPagamento = JSON.parse(await getData('pagamento-bloqueado'))
 
             if (!blockPagamento) {
-                pagamentoIpag( blockPagamento)
+                pagamentoIpag(cartaoTokenizado, blockPagamento)
             } else if (verificarSeTempoDeBloqueioAcabou(blockPagamento.date)) {
-                pagamentoIpag( blockPagamento)
+                pagamentoIpag(cartaoTokenizado, blockPagamento)
             } else if (blockPagamento.trys < 2) {
-                pagamentoIpag( blockPagamento)
+                pagamentoIpag(cartaoTokenizado, blockPagamento)
             } else {
                 alert("Pagamento temporariamente bloqueado por excesso de falhas consecutivas. Tente novamente em 1 hora")
             }
@@ -429,10 +432,11 @@ const PagarAnuncioFornecedor = () => {
                                 <p style={{ fontSize: 14 }}>Data de início: {traduzirData(submitValuesRef.current?.dataInicio)}</p>
                                 <p style={{ fontSize: 14 }}>Data final: {traduzirData(submitValuesRef.current?.dataFinal)}</p>
                                 <h5>Duração: {submitValuesRef.current?.plano} dias</h5>
+                                <h5>Preço: R$ {formatReal(submitValuesRef.current?.preco_anuncio)}</h5>
                             </MDBCol>
                         </MDBRow>
                         <hr className="hr mb-6" />
-                        <div className="row g-3 ">
+                        <div className="row g-3">
                             <MDBValidationItem className="col-12">
                                 <MDBInput value={nrCartao} onChange={(e) => onChangeNrCartao(e.target.value)} label="Numero do cartão" />
                             </MDBValidationItem>
@@ -451,7 +455,7 @@ const PagarAnuncioFornecedor = () => {
                                 <MDBInput value={cvv} onChange={(e) => onChangeCvv(e.target.value)} label="CVV" />
                             </MDBValidationItem>
                             <div style={{ color: '#DC4C64' }}>{message}</div>
-                            <MDBBtn onClick={submit}>Comprar</MDBBtn>
+                            {isLoadingSubmit ? <MDBSpinner className="align-self-center" size="lg" /> : <MDBBtn onClick={submit}>Comprar</MDBBtn>}
                         </div>
                     </MDBCard>
                 </MDBCol>

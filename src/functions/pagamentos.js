@@ -141,7 +141,7 @@ export const ipagRequest = async (fornecedor, endereco, cartao, planId) => {
 export const ipagRequestCriarClienteEAssinaturaUsandoToken = async (cartao, endereco, fornecedor, planId, formatedDate) => {
     const data = {cartao, endereco, fornecedor, planId, formatedDate}
     try {
-        
+        console.log("dados enviados ao ipag",data)
     const responseBackEnd = await api.request({
         url: "/ipagRequestCriarClienteEAssinaturaUsandoToken",
         method: "POST",

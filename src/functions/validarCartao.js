@@ -23,17 +23,20 @@ export const checkDate = (date) => {
 }
 
 export function testarCC(nr) {
-
+    while (nr.includes(' ')) {
+        nr = nr.replace(' ', '');
+    }
     var cartoes = {
-        Visa: /^4[0-9]{12}(?:[0-9]{3})/,
+        Elo: /^(((4011|4312|4389|4514|4576|5041|5066|5067|6277|6362|6504|6505|6550|6551|6554|6555)[0-9]{12})|(509[0-9]{2}[0-9]{12}))/,
+        Visa: /^4(?:[0-9]{12}|[0-9]{15})$/,
         Mastercard: /^5[1-5][0-9]{14}/,
         Amex: /^3[47][0-9]{13}/,
         DinersClub: /^3(?:0[0-5]|[68][0-9])[0-9]{11}/,
         Discover: /^6(?:011|5[0-9]{2})[0-9]{12}/,
-        JCB: /^(?:2131|1800|35\d{3})\d{11}/
+        JCB: /^(?:2131|1800|35\d{3})\d{11}/,
     };
     for (var cartao in cartoes) if (nr.match(cartoes[cartao])) return cartao;
-    return false;
+    return null;
 }
 
 export const formatDate = (date) => {
