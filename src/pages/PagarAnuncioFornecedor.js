@@ -199,7 +199,7 @@ const PagarAnuncioFornecedor = () => {
         try {
             setIsLoadingPayment(true)
             const paymentObj = {
-                "amount": 1.01/*submitValuesRef.current.preco_anuncio*/ ,
+                "amount": submitValuesRef.current.preco_anuncio ,
                 "callback_url": "https://festum-heroku-production.up.railway.app/webhookPlanoEstrelarIpag",
                 "payment": {
                     "type": "card",
