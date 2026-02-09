@@ -11,6 +11,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import CryptoJS from 'crypto-js';
 import { dateFormatYearFirst } from "../functions/dateFormat";
 import { decode } from "base-64"
+import api from "../api/api";
 
 const PagarAssinaturaFornecedor = () => {
     //console.log("user from context: ", userFromContext)
@@ -69,9 +70,8 @@ const PagarAssinaturaFornecedor = () => {
     }
 
     const firstFunctions = async () => {
-        let endereco = await getEnderecoFromCep(fornecedorFromDBRef.current.cep)
-      
         setIsloading(true)
+        let endereco = await getEnderecoFromCep(fornecedorFromDBRef.current.cep)
         try{
             planoIpag.current = await ipagRequestGetPlano(planId);
         }catch (error){
@@ -240,8 +240,11 @@ const PagarAssinaturaFornecedor = () => {
 
         }
     }
-    const checarCartaoAntesDoPagamento = async (cartaoTokenizado, assinaturaDB, assinaturaIpag, blockPagamentoObj) => {
+    const checarCartaoAntesDoPagamento = async (cartaoTokenizado, assinaturaDB, assinaturaIpag, blockPagamentoObj, cartao) => {
+        const fornecedor = fornecedorFromDBRef.current
 
+        const endereco = enderecoFromCepRef.current
+        const data = { fornecedor, endereco, cartao, cartaoTokenizado}
         try {
             setIsLoadingPayment(true)
             const paymentObj = {
@@ -253,11 +256,11 @@ const PagarAssinaturaFornecedor = () => {
                     "installments": "1",
                     "capture": true,
                     "card": {
-                        "holder": nome,
-                        "number": nrCartao,
-                        "expiry_month": validadeMonth,
-                        "expiry_year": validadeYear,
-                        "cvv": cvv
+                        "holder": cartao.nome,
+                        "number": cartao.nrCartao,
+                        "expiry_month": cartao.validadeMonth,
+                        "expiry_year": cartao.validadeYear,
+                        "cvv": cartao.cvv
                         //"token": cartao.token
                     }
                 },
@@ -279,14 +282,14 @@ const PagarAssinaturaFornecedor = () => {
             }
 
 
-            const responseIpag = await apiIpag.request({
-                url: "/service/payment",
+            const responseIpag = await api.request({
+                url: "/checarCartaoAntesDoPagamento",
                 method: 'POST',
-                data: paymentObj
+                data: data
 
             })
-
-
+            
+            console.log("response ipag do pagamento de teste: ", responseIpag)
             if (responseIpag.data.attributes.status.code == 5 || responseIpag.data.attributes.status.code == 8) {
                 const responseIpagCancelar = await apiIpag.request({
                     url: "/service/cancel?id=" + responseIpag.data.id,
@@ -296,8 +299,8 @@ const PagarAssinaturaFornecedor = () => {
                 if (!!blockPagamentoObj) {
                     await removeData('pagamento-bloqueado')
                 }
-                await updateStatusPagamentoFornecedor({ status_pagamento: "Aprovado e Capturado", fk_fornecedor_pessoa: fornecedorFromDBRef.current.fk_fornecedor_pessoa }, accessTokenRef.current)
-                efetuarPagamento(cartaoTokenizado, assinaturaDB, assinaturaIpag)
+               await updateStatusPagamentoFornecedor({ status_pagamento: "Aprovado e Capturado", fk_fornecedor_pessoa: fornecedorFromDBRef.current.fk_fornecedor_pessoa }, accessTokenRef.current)
+               efetuarPagamento(cartaoTokenizado, assinaturaDB, assinaturaIpag)
             } else {
                 // protocolo de falha no pagamento
                 if (!!blockPagamentoObj) {
@@ -311,12 +314,12 @@ const PagarAssinaturaFornecedor = () => {
                     await storeData("pagamento-bloqueado", JSON.stringify(criarObjetoDeBloqueio()))
                 }
                 const statusPagamento = mensagemStatusContaIpag(responseIpag.data.attributes.status.code)
-                alert("Erro no pagamento: Pagamento " + statusPagamento)
-                await updateStatusPagamentoFornecedor({ status_pagamento: statusPagamento, fk_fornecedor_pessoa: fornecedorFromDBRef.current.fk_fornecedor_pessoa }, accessTokenRef.current)
+               alert("Erro no pagamento: Pagamento " + statusPagamento)
+               await updateStatusPagamentoFornecedor({ status_pagamento: statusPagamento, fk_fornecedor_pessoa: fornecedorFromDBRef.current.fk_fornecedor_pessoa }, accessTokenRef.current)
             }
             setIsLoadingPayment(false)
         } catch (error) {
-            console.log('erro ao tentar realizar o pagamento: ', error.response.data)
+            console.log('erro ao tentar realizar o pagamento: ', error)
             // protocolo de falha no pagamento
             if (!!blockPagamentoObj) {
                 if (verificarSeTempoDeBloqueioAcabou(blockPagamentoObj.date)) {
@@ -360,9 +363,18 @@ const PagarAssinaturaFornecedor = () => {
     }
 
     const submit = async () => {
-        if (nrCartaoIsValidRef.current && nomeIsValidRef.current && validadeIsValidRef.current && cvvIsValidRef.current && nascimentoIsValid.current) {
+       if (nrCartaoIsValidRef.current && nomeIsValidRef.current && validadeIsValidRef.current && cvvIsValidRef.current && nascimentoIsValid.current) {
 
             const cartao = { nrCartao: nrCartao, nome: nome, validadeMonth: validadeMonth, validadeYear: validadeYear, cvv: cvv, nascimento: dateFormatYearFirst(nascimento) , formatedDate: formatedDateRef.current }
+        // const cartao = {
+        //     nrCartao: "4916 5733 8093 7962",
+        //     nome: "JOAO GABRIEL BRODER",
+        //     validadeMonth: "12",
+        //     validadeYear: "2028",
+        //     cvv: "123",
+        //     nascimento: "1995-07-09",
+        //     formatedDate: null
+        // }
 
             setIsLoadingSubmit(true)
             setMessage('')
@@ -388,11 +400,11 @@ const PagarAssinaturaFornecedor = () => {
             let blockPagamento = JSON.parse(await getData('pagamento-bloqueado'))
 
             if (!blockPagamento) {
-                checarCartaoAntesDoPagamento(cartaoTokenizado, assinaturaDB, assinaturaIpag, blockPagamento)
+                checarCartaoAntesDoPagamento(cartaoTokenizado, assinaturaDB, assinaturaIpag, blockPagamento, cartao)
             } else if (verificarSeTempoDeBloqueioAcabou(blockPagamento.date)) {
-                checarCartaoAntesDoPagamento(cartaoTokenizado, assinaturaDB, assinaturaIpag, blockPagamento)
+                checarCartaoAntesDoPagamento(cartaoTokenizado, assinaturaDB, assinaturaIpag, blockPagamento, cartao)
             } else if (blockPagamento.trys < 2) {
-                checarCartaoAntesDoPagamento(cartaoTokenizado, assinaturaDB, assinaturaIpag, blockPagamento)
+                checarCartaoAntesDoPagamento(cartaoTokenizado, assinaturaDB, assinaturaIpag, blockPagamento, cartao)
             } else {
                 alert("Pagamento temporariamente bloqueado por excesso de falhas consecutivas. Tente novamente em 1 hora")
             }

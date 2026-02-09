@@ -32,7 +32,6 @@ export const sendAssinaturaToBackEnd = async (assinatura, fornecedor) => {
     
     try {
         const dadosAssinatura = JSON.stringify(assinatura)
-        console.log("objeto assinatura: ", dadosAssinatura)
         const dataPrimeiraCobranca = assinatura.attributes.starting_date
         const idUnico = assinatura.id
         const profile_id = assinatura.attributes.profile_id
@@ -188,8 +187,8 @@ export const ipagRequestChecarSeAssinaturaExiste = async (id) => {
 
 export const ipagRequestGetPlano = async (id) => {
     try {
-        const assinatura = await apiIpag.request({
-            url: "/service/resources/plans?id=" + id,
+        const assinatura = await api.request({
+            url: "/planobyid/" + id,
             method: "GET"
         })
         return assinatura.data;

@@ -195,7 +195,7 @@ const PagarAnuncioFornecedor = () => {
     }
 
 
-    const pagamentoIpag = async (cartaoTokenizado,blockPagamentoObj) => {
+    const pagamentoIpag = async (cartaoTokenizado,blockPagamentoObj, cartao) => {
         try {
             setIsLoadingPayment(true)
             const paymentObj = {
@@ -207,11 +207,11 @@ const PagarAnuncioFornecedor = () => {
                     "installments": "1",
                     "capture": true,
                     "card": {
-                        "holder": nome,
-                        "number": nrCartao,
-                        "expiry_month": validadeMonth,
-                        "expiry_year": validadeYear,
-                        "cvv": cvv
+                        "holder": cartao.nome,
+                        "number": cartao.nrCartao,
+                        "expiry_month": cartao.validadeMonth,
+                        "expiry_year": cartao.validadeYear,
+                        "cvv": cartao.cvv
                         //"token": cartao.token
                     }
                 },
@@ -268,7 +268,7 @@ const PagarAnuncioFornecedor = () => {
             }
             setIsLoadingPayment(false)
         } catch (error) {
-            console.log( error.response.data)
+            console.log( error)
             // protocolo de falha no pagamento
             if (!!blockPagamentoObj) {
                 if (verificarSeTempoDeBloqueioAcabou(blockPagamentoObj.date)) {
@@ -336,9 +336,18 @@ const PagarAnuncioFornecedor = () => {
     }
 
     const submit = async () => {
-        if (nrCartaoIsValidRef.current && nomeIsValidRef.current && validadeIsValidRef.current && cvvIsValidRef.current && nascimentoIsValid.current) {
+       if (nrCartaoIsValidRef.current && nomeIsValidRef.current && validadeIsValidRef.current && cvvIsValidRef.current && nascimentoIsValid.current) {
 
             const cartao = { nrCartao: nrCartao, nome: nome, validadeMonth: validadeMonth, validadeYear: validadeYear, cvv: cvv, nascimento: formatDate(nascimento), formatedDate: formatedDateRef.current }
+            // const cartao = {
+            //     nrCartao: "4916 5733 8093 7962",
+            //     nome: "JOAO GABRIEL BRODER",
+            //     validadeMonth: "12",
+            //     validadeYear: "2028",
+            //     cvv: "123",
+            //     nascimento: "1995-07-09",
+            //     formatedDate: null
+            // }
 
             setIsLoadingSubmit(true)
             setMessage('')
@@ -354,11 +363,11 @@ const PagarAnuncioFornecedor = () => {
             let blockPagamento = JSON.parse(await getData('pagamento-bloqueado'))
 
             if (!blockPagamento) {
-                pagamentoIpag(cartaoTokenizado, blockPagamento)
+                pagamentoIpag(cartaoTokenizado, blockPagamento, cartao)
             } else if (verificarSeTempoDeBloqueioAcabou(blockPagamento.date)) {
-                pagamentoIpag(cartaoTokenizado, blockPagamento)
+                pagamentoIpag(cartaoTokenizado, blockPagamento, cartao)
             } else if (blockPagamento.trys < 2) {
-                pagamentoIpag(cartaoTokenizado, blockPagamento)
+                pagamentoIpag(cartaoTokenizado, blockPagamento, cartao)
             } else {
                 alert("Pagamento temporariamente bloqueado por excesso de falhas consecutivas. Tente novamente em 1 hora")
             }
