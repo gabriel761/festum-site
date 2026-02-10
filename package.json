@@ -4,6 +4,8 @@
   "description": "template for mdb-react-ui-kit",
   "private": true,
   "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-keywords": "^5.1.0",
     "axios": "^1.2.2",
     "base-64": "^1.0.0",
     "crypto-js": "^4.1.1",
